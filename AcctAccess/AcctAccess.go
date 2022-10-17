@@ -37,7 +37,7 @@ func acctValidCheck(uName string, uPW string) (bool, error) {
 			log.Println("Password Match")
 			return true, nil // Account and PW are valid, no error msg
 		} else {
-			log.Println("Invlaid password")
+			log.Println("Invalid password")
 			return false, fmt.Errorf("password incorrect")
 		}
 	} else {
@@ -49,8 +49,7 @@ func acctValidCheck(uName string, uPW string) (bool, error) {
 // Main procedure
 func main() {
 
-	acctValid := false
-	err := fmt.Errorf("")
+	acctValid := false // Set the check to false to start
 
 	// Loop through the user input
 	//
@@ -79,16 +78,14 @@ func main() {
 		// Call the procedure to check the account and pw input
 		acctValid, err = acctValidCheck(acctName, acctPW)
 		if !acctValid {
-			fmt.Println(acctValid)
-			fmt.Println(err)
 			if i < LOGINATTEMPTMAX { // Are there any attempts left?
-				fmt.Printf(" - Please try again (%d Attempts left).\n", LOGINATTEMPTMAX-i)
+				fmt.Printf("%s - Please try again (%d Attempts left).\n", err, LOGINATTEMPTMAX-i)
 
 			}
 		}
 
 	}
-	fmt.Println(err)
+
 	// Output the final outcome
 	if acctValid {
 		fmt.Println("\nLogin Successful!")
