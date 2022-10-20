@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"gdates"
 	"log"
+
+	"github.com/IFT365/src/gdates"
 )
 
 func main() {
