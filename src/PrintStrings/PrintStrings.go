@@ -10,7 +10,7 @@
 // Users are asked to enters strings, one at a time and then prompted
 // if they want to enter another.
 // The entered strings are stored in a slice and once the user is finished
-// entering strings the stored strings are printed out.
+// entering strings, the stored strings are printed out.
 package main
 
 import (
@@ -21,19 +21,12 @@ import (
 	"strings"
 )
 
-// Settings that can be easily changed if needed.
-const (
-	ACCTNAMETEST string = "admin"    // The account to be matched
-	ACCTPWTEST   string = "Pa$$w0rd" // The password to be matched
-
-	LOGINATTEMPTMAX int = 3 // The number of allowed attempts
-)
-
 // Main procedure
 func main() {
 
-	moreStrings := true // Set the check to true to start
-	myStrings := make([]string, 0)
+	moreStrings := true            // Set the check to true to start
+	myStrings := make([]string, 0) // Slice to hold strings input
+
 	// Loop through the user input
 	//
 	for moreStrings {
@@ -47,8 +40,10 @@ func main() {
 		}
 
 		log.Println("String entered: ", inString)
+		// Append string to end of slice.
 		myStrings = append(myStrings, strings.TrimSpace(inString))
 
+		// Check to see if user wants to input anothe string
 		fmt.Print("Continue[Y/n]: ")
 		reader = bufio.NewReader(os.Stdin)
 		inString, err = reader.ReadString('\n')
@@ -61,8 +56,11 @@ func main() {
 		}
 
 	}
+
+	// print out the number of strings entered
 	fmt.Printf("%d strings entered\n", len(myStrings))
 
+	// Print out all the strings entered.
 	fmt.Println(strings.Join(myStrings, ", "))
 
 }
