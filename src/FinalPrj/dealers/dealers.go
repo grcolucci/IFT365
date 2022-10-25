@@ -1,4 +1,4 @@
-package stations
+package dealers
 
 import (
 	"encoding/csv"
@@ -11,8 +11,8 @@ type Service struct {
 	servicePrice string
 }
 
-type Station struct {
-	stationId string
+type Dealer struct {
+	dealerID  string
 	telephone string
 	address   string
 	city      string
@@ -22,7 +22,7 @@ type Station struct {
 	oilChange Service
 }
 
-func ReadStationFile(fName string) ([]Station, error) {
+func ReadDealerFile(fName string) ([]Dealer, error) {
 
 	csvFile, err := os.Open(fName)
 	if err != nil {
@@ -31,15 +31,15 @@ func ReadStationFile(fName string) ([]Station, error) {
 	fmt.Println("Successfully Opened CSV file")
 	defer csvFile.Close()
 
-	stationFile := make([]Station, 0)
+	dealerFile := make([]Dealer, 0)
 
 	csvLines, err := csv.NewReader(csvFile).ReadAll()
 	if err != nil {
 		fmt.Println(err)
 	}
 	for _, line := range csvLines {
-		stat := Station{
-			stationId: line[0],
+		stat := Dealer{
+			dealerID:  line[0],
 			telephone: line[1],
 			address:   line[2],
 			city:      line[3],
@@ -53,12 +53,12 @@ func ReadStationFile(fName string) ([]Station, error) {
 		stat.oilChange.serviceName = "Premium"
 		stat.oilChange.servicePrice = "$45.99"
 
-		stationFile = append(stationFile, stat)
+		dealerFile = append(dealerFile, stat)
 
 	}
 
-	fmt.Println(stationFile)
+	fmt.Printf("\n# of dealers loaded: %d - %s\n", len(dealerFile), dealerFile)
 
-	return stationFile, nil
+	return dealerFile, nil
 
 }
