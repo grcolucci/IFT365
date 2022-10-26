@@ -1,13 +1,16 @@
 // ////////////////////////////////////////////////////////////////////////////////////////
 //
-// Filename: printStrings.go
+// Filename: PrintStrings.go
 // File type: Go
 // Author: Glenn Colucci
 // Class: IFT 365
-// Date: October 18, 2022
+// Date: October 25, 2022
 //
 // Description:
-// attempt a certain number of tries to gain access.
+// Users are asked to enters strings, one at a time and then prompted
+// if they want to enter another.
+// The entered strings are stored in a slice and once the user is finished
+// entering strings the stored strings are printed out.
 package main
 
 import (
@@ -30,12 +33,12 @@ const (
 func main() {
 
 	moreStrings := true // Set the check to true to start
-
+	myStrings := make([]string, 0)
 	// Loop through the user input
 	//
 	for moreStrings {
 
-		// Take the user input for Account
+		// Take the user input for a string
 		fmt.Print("Enter String: ")
 		reader := bufio.NewReader(os.Stdin)
 		inString, err := reader.ReadString('\n')
@@ -44,6 +47,7 @@ func main() {
 		}
 
 		log.Println("String entered: ", inString)
+		myStrings = append(myStrings, strings.TrimSpace(inString))
 
 		fmt.Print("Continue[Y/n]: ")
 		reader = bufio.NewReader(os.Stdin)
@@ -57,4 +61,8 @@ func main() {
 		}
 
 	}
+	fmt.Printf("%d strings entered\n", len(myStrings))
+
+	fmt.Println(strings.Join(myStrings, ", "))
+
 }
