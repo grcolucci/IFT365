@@ -5,9 +5,9 @@ import (
 )
 
 type Date struct {
-	Year  int
-	Month int
-	Day   int
+	year  int
+	month int
+	day   int
 }
 
 func (d *Date) SetYear(year int) error {
@@ -15,6 +15,11 @@ func (d *Date) SetYear(year int) error {
 		return errors.New("invalid year")
 	}
 
-	d.Year = year
+	d.year = year
 	return nil
+}
+
+func (d *Date) Year() int {
+
+	return d.year
 }
