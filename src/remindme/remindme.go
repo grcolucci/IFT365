@@ -9,13 +9,13 @@ import (
 
 func main() {
 
-	date := gdates.Date{Year: 2019, Month: 5, Day: 27}
-	fmt.Println(date)
+	//date := gdates.Date{year: 2019, month: 5, day: 27}
+	// fmt.Println(date)
 
 	date2 := gdates.Date{}
-	err := date2.SetYear(-3)
+	err := date2.SetYear(3)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(date2.Year)
+	fmt.Printf("The years stored is: %d", date2.Year())
 }
