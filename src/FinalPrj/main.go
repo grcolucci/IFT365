@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	custFile, err := customers.ReadCustFile("customers.csv")
+	custFile, err := customers.ReadCustFile("src/customers.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -21,5 +21,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Printf("\n# of dealers: %d - %s\n", len(dealerFile), dealerFile)
 
 }
