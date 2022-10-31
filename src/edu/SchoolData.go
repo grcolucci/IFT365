@@ -70,4 +70,7 @@ func main() {
 
 	school.PrintAddressLbl(teachFile[randIndex].Name, teachFile[randIndex].Address)
 
+	// Print out the total salary for all teachers
+	fmt.Printf("The total salary for all teachers is: %0.2f", school.SalaryTotal(teachFile))
+
 }

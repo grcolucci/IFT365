@@ -43,7 +43,7 @@ type Teacher struct {
 	Address
 }
 
-// Mothod to Set and Get the teacher name
+// Method to Set and Get the teacher name
 // Set passes in a pointer for the reciever so the name
 // can truely be updated
 func (t *Teacher) SetName(name string) {
@@ -63,6 +63,18 @@ func PrintAddressLbl(inName string, inAddr Address) {
 	fmt.Println(inName)
 	fmt.Println(inAddr.Street)
 	fmt.Printf("%s, %s %05d\n\n", inAddr.City, inAddr.State, inAddr.zipCode)
+}
+
+// Loop through the teacher list and add all the salaries together
+func SalaryTotal(teachers []Teacher) float64 {
+
+	var totSalary float64
+	for _, v := range teachers {
+		totSalary += v.Salary
+	}
+
+	return totSalary
+
 }
 
 // Read in and store the teacher data
@@ -91,7 +103,7 @@ func ReadTeacherFile(fName string) ([]Teacher, error) {
 
 		var stat Teacher
 
-		intVar, err := strconv.Atoi(line[0]) // Convert string to int
+		intVar, err := strconv.Atoi(line[0]) // Convert TeacherID string to int
 		if err != nil {
 			log.Panicf("Error with data record %d skipped", i)
 			continue
@@ -101,7 +113,7 @@ func ReadTeacherFile(fName string) ([]Teacher, error) {
 		stat.Name = line[1]
 
 		// Convert the salary to a float64
-		fltVar, err := strconv.ParseFloat(line[0], 64)
+		fltVar, err := strconv.ParseFloat(line[2], 64)
 		if err != nil {
 			log.Panicf("Error with data record %d skipped", i)
 			continue
