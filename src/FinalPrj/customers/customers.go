@@ -7,13 +7,12 @@ import (
 )
 
 type Customer struct {
-	customerId string
-	firstName  string
-	lastName   string
-	address    string
-	city       string
-	state      string
-	zip        string
+	CustomerId string
+	Name       string
+	Address    string
+	City       string
+	State      string
+	Zip        string
 }
 
 func ReadCustFile(fName string) ([]Customer, error) {
@@ -33,13 +32,12 @@ func ReadCustFile(fName string) ([]Customer, error) {
 	}
 	for _, line := range csvLines {
 		cust := Customer{
-			customerId: line[0],
-			firstName:  line[1],
-			lastName:   line[2],
-			address:    line[3],
-			city:       line[4],
-			state:      line[5],
-			zip:        line[6],
+			CustomerId: line[0],
+			Name:       line[1],
+			Address:    line[2],
+			City:       line[3],
+			State:      line[4],
+			Zip:        line[5],
 		}
 
 		custFile = append(custFile, cust)
