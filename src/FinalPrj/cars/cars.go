@@ -1,10 +1,8 @@
 package cars
 
-type Car {
+type Car struct {
 	CustomerId int
-	Name string
-	Year int
-	Model string
-	
+	Name       string
+	Year       int
+	Model      string
 }
-
