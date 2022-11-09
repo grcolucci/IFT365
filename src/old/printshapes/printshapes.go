@@ -1,3 +1,15 @@
+// ////////////////////////////////////////////////////////////////////////////////////////
+//
+// Filename: printshapes.go
+// File type: Go
+// Author: Glenn Colucci
+// Class: IFT 365
+// Date: November 8, 2022
+//
+// Description:
+// Using an interface to print out common geometric infomation
+// for different shapes.
+
 package main
 
 import (
@@ -42,6 +54,8 @@ type Solid interface {
 
 // YOUR CODE HERE: Revise PrintInfo to accept a parameter
 // that satisfies the Solid interface.
+// Changed the parameter from a specific shape to the shape
+// interface
 
 func PrintInfo(s Solid) {
 	fmt.Println(s)

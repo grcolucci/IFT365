@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/IFT365/src/FinalPrj/customers"
@@ -46,22 +48,54 @@ func main() {
 	}
 	fmt.Printf("\n# of dealers: %d - %s\n", len(dealerFile), dealerFile)
 
+	// Enter the date
 	serviceDate()
+
+	// Print list of vehicles over 6 months since oil change
+
+	// Print list of vehicles over 6 months since car wash
 
 }
 
 func serviceDate() {
 
-	currentTime := time.Now()
-
 	// Take the user input for a string
-	fmt.Print("Enter a date to get a list of prior service: ")
+	fmt.Print("Enter the month (1-12): ")
 	reader := bufio.NewReader(os.Stdin)
 	inString, err := reader.ReadString('\n')
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Date entered: %s", inString)
+	// Convert the salary to a float64
+	monthIn, err := strconv.Atoi(strings.TrimSpace(inString))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Print("Enter the day (1-31): ")
+	reader = bufio.NewReader(os.Stdin)
+	inString, err = reader.ReadString('\n')
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Convert the salary to a float64
+	dayIn, err := strconv.Atoi(strings.TrimSpace(inString))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Print("Enter the year (1999-Present): ")
+	reader = bufio.NewReader(os.Stdin)
+	inString, err = reader.ReadString('\n')
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Convert the salary to a float64
+	yearIn, err := strconv.Atoi(strings.TrimSpace(inString))
+	if err != nil {
+		log.Fatal(err)
+	}
+	currentTime := time.Date(yearIn, time.Month(monthIn), dayIn, 0, 0, 0, 0, time.UTC)
+
+	fmt.Println(yearIn, monthIn, dayIn)
 	fmt.Println("Time entered: ", currentTime)
 }

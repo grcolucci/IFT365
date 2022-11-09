@@ -13,6 +13,17 @@ type Customer struct {
 	City       string
 	State      string
 	Zip        string
+	Phone      string
+	vehicles   []Car
+}
+
+type Car struct {
+	CustomerId    int
+	Name          string
+	Year          int
+	Model         string
+	LastCarWash   string
+	LastOilChange string
 }
 
 func ReadCustFile(fName string) ([]Customer, error) {
