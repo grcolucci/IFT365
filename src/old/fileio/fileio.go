@@ -1,15 +1,16 @@
 // ////////////////////////////////////////////////////////////////////////////////////////
 //
-// Filename: school.go
+// Filename: fileio.go
 // File type: Go
 // Author: Glenn Colucci
 // Class: IFT 365
-// Module: 4
-// Date: October 31, 2022
+// Module: 5
+// Date: November 15, 2022
 //
 // Description:
-// Package for processing student and teacher data.
-// storage structs and functions/methods for handling data
+// Read in a list of data from a file "teachers.csv"
+// sort the data in various ways, printing out each way
+// Write the data out to a file "records.csv"
 package main
 
 import (
@@ -24,7 +25,7 @@ import (
 	"time"
 )
 
-// Comman struct for teacher and student address
+// struct for address
 type Address struct {
 	Street  string
 	City    string
@@ -41,6 +42,20 @@ type Teacher struct {
 	Address
 }
 
+// Catch the panic
+func reportPanic() {
+	p := recover()
+
+	if p == nil {
+		return
+	}
+
+	err, ok := p.(error)
+	if ok {
+		fmt.Println(err)
+	}
+}
+
 // Method to Set and Get the teacher name
 // Set passes in a pointer for the reciever so the name
 // can truely be updated
@@ -51,59 +66,48 @@ func (t *Teacher) SetName(name string) {
 	t.lName = fields[1]
 }
 
-func (t Teacher) GetName() string {
+// Function to print out teacher list
+func PrintAddressLbl(teacherList []Teacher) {
 
-	return t.fName
-}
+	fmt.Printf("\n%-10s\t%-15s\t%s\t%-20s\t%s, %s %s\n", "First Name", "Last Name",
+		"Salary", "Street", "City", "St", "Zip Code")
 
-// Function to print out address labels
-// Input: Sudent/Teacher name field and Address struct/field
-func PrintAddressLbl(t Teacher) {
+	for _, t := range teacherList {
 
-	fmt.Printf("%-10s\t%-15s\t%-20s\t%s, %s %05d\n", t.fName, t.lName, t.Street, t.City, t.State, t.zipCode)
-
-}
-
-// Loop through the teacher list and add all the salaries together
-func SalaryTotal(teachers []Teacher) float64 {
-
-	var totSalary float64
-	for _, v := range teachers {
-		totSalary += v.Salary
+		fmt.Printf("%-10s\t%-15s\t%0.2f\t%-20s\t%s, %s %05d\n", t.fName, t.lName,
+			t.Salary, t.Street, t.City, t.State, t.zipCode)
 	}
-
-	return totSalary
-
 }
 
 func main() {
 
+	defer reportPanic()
+
 	// Open and read in the teacher file
 	// The contents of the file are read into a slice of type Teacher.
-	teachFile, err := ReadTeacherFile("src/fileio/teachers.csv")
+	teachFile, err := ReadTeacherFile("teachers.csv")
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	// Print out the contents of the slice and then formatted labels
+	// Print out the contents of the slice
 
 	fmt.Println("Teacher slice contents")
 	fmt.Println(teachFile)
 
 	fmt.Printf("\n# of teachers loaded: %d\n", len(teachFile))
 
-	fmt.Println("Teacher Labels:")
-	for _, v := range teachFile {
-		PrintAddressLbl(v)
-	}
+	// Unsorted
+	fmt.Println("\n\tTeacher List - Unsorted:")
+	PrintAddressLbl(teachFile)
+
+	// Sort by last name
 	sort.Slice(teachFile, func(i, j int) bool {
 		return teachFile[i].lName < teachFile[j].lName
 	})
 
-	fmt.Println("Sorted Teacher Labels:")
-	for _, v := range teachFile {
-		PrintAddressLbl(v)
-	}
+	fmt.Println("\n\tTeacher List - Sorted by last name:")
+	PrintAddressLbl(teachFile)
 
 	// Randomly select one of the teacher records and change the name.
 	// Then print out a new label for that record.
@@ -111,24 +115,26 @@ func main() {
 	randIndex := rand.Intn((len(teachFile) - 1 + 1) + 0)
 	teachFile[randIndex].SetName("Mickey Mouse")
 
+	// re-sort
 	sort.Slice(teachFile, func(i, j int) bool {
 		return teachFile[i].lName < teachFile[j].lName
 	})
 
-	fmt.Println("Updated and resorted teacher label")
-	for _, v := range teachFile {
-		PrintAddressLbl(v)
-	}
+	fmt.Println("\n\tTeacher list - One name changed sorted by last name")
+	PrintAddressLbl(teachFile)
 
-	// Print out the total salary for all teachers
-	fmt.Printf("The total salary for all teachers is: %0.2f", SalaryTotal(teachFile))
+	// Sort by Salary
+	sort.Slice(teachFile, func(i, j int) bool {
+		return teachFile[i].Salary > teachFile[j].Salary
+	})
 
-	// Write out the new data to a temp file
+	fmt.Println("\n\tTeacher list - sorted by salary (decending)")
+	PrintAddressLbl(teachFile)
 
+	// Write out the new data to a  file
 	file, err := os.Create("records.csv")
-
 	if err != nil {
-		log.Fatalln("failed to open file", err)
+		panic(err)
 	}
 	defer file.Close()
 	w := csv.NewWriter(file)
@@ -137,7 +143,9 @@ func main() {
 	// Using WriteAll
 	var data [][]string
 	for _, record := range teachFile {
-		row := []string{strconv.Itoa(record.EmployeeID), record.fName, record.lName}
+		row := []string{strconv.Itoa(record.EmployeeID), record.fName, record.lName,
+			fmt.Sprintf("%f", record.Salary), record.Street, record.City, record.State,
+			strconv.Itoa(record.zipCode), ""}
 		data = append(data, row)
 	}
 	w.WriteAll(data)

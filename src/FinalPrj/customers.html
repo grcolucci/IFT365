@@ -1,0 +1,21 @@
+<h1>Customers</h1>
+
+<div>
+	{{.CustomerCount}} total signatures -
+	<a href="/guestbook/new">Add Your Signature</a>
+</div>
+
+<div>
+	<table>
+		<tr>
+	<th>ID</th>
+	<th>Name</th>
+	<th>Address</th>
+	</tr>
+	
+	{{range .Customers}}
+		<li>{{.MenuLine}}</li>
+
+
+	{{end}}
+</div>
