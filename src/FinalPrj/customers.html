@@ -1,4 +1,10 @@
-<h1>Customers</h1>
+<style>
+	table, th, td {
+	  border: 1px solid black;
+	  border-collapse: collapse;
+	}
+</style>
+	<h1>Customers</h1>
 
 <div>
 	{{.CustomerCount}} total signatures -
@@ -8,14 +14,15 @@
 <div>
 	<table>
 		<tr>
-	<th>ID</th>
-	<th>Name</th>
-	<th>Address</th>
-	</tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Address</th>
+		</tr>
 	
 	{{range .Customers}}
-		<li>{{.MenuLine}}</li>
+		<tr><td>{{.CustomerId}}</td><td>{{.Name}}</td></tr>
 
 
 	{{end}}
+	</table>
 </div>
