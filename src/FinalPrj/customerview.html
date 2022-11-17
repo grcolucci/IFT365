@@ -1,0 +1,41 @@
+<style>
+.vertical-menu {
+  width: 200px;
+}
+
+.vertical-menu a {
+  background-color: #eee;
+  color: black;
+  display: block;
+  padding: 12px;
+  text-decoration: none;
+}
+
+.vertical-menu a:hover {
+  background-color: #ccc;
+}
+
+.vertical-menu a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+</style>
+	<h1>Customers</h1>
+
+<div>
+
+        <form action="/customer/update" method="POST">
+                <div><input type="text" name="CustomerID" value={{.CustomerId}}></div>
+                <div><input type="text" name="Name" value={{.Name}}></div>
+                <div><input type="text" name="Address" value={{.Address}}></div>
+                <div><input type="text" name="City" value={{.City}}>,<input type="text" name="State" value={{.State}}>
+                        <input type="text" name="Zip" value={{.Zip}}></div>
+                <div><input type="submit"></div>
+              </form>
+        
+        
+        total signatures -
+	<a href="/guestbook/new">Add Your Signature</a>
+</div>
+
+

@@ -56,7 +56,7 @@ func LoadCustomers(fileName string) (map[string]Customer, error) {
 			Zip:        line[5],
 		}
 		cust.MenuLine = fmt.Sprintf("%s\t\t\t%s\t", cust.CustomerId, cust.Name)
-		cust.URLLine = fmt.Sprintf("http://localhost:8080/customerview/custID=%s", cust.CustomerId)
+		cust.URLLine = fmt.Sprintf("http://localhost:8080/customerview?custID=%s", cust.CustomerId)
 		customers[cust.CustomerId] = cust
 	}
 	// check()
