@@ -30,17 +30,17 @@ type Car struct {
 }
 type CustData struct {
 	CustomerCount int
-	Customers     []Customer
+	Customers     map[string]Customer
 }
 
 // LoadCustomers returns a slice of strings read from fileName, one
 // string per line.
-func LoadCustomers(fileName string) ([]Customer, error) {
+func LoadCustomers(fileName string) (map[string]Customer, error) {
 
-	var customers []Customer
+	customers := make(map[string]Customer)
 	file, err := os.Open(fileName)
 	if os.IsNotExist(err) {
-		return nil, err
+		return customers, err
 	}
 	// check(err)
 	defer file.Close()
@@ -57,7 +57,7 @@ func LoadCustomers(fileName string) ([]Customer, error) {
 		}
 		cust.MenuLine = fmt.Sprintf("%s\t\t\t%s\t", cust.CustomerId, cust.Name)
 		cust.URLLine = fmt.Sprintf("http://localhost:8080/customerview/custID=%s", cust.CustomerId)
-		customers = append(customers, cust)
+		customers[cust.CustomerId] = cust
 	}
 	// check()
 	return customers, scanner.Err()
