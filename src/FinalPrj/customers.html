@@ -1,8 +1,24 @@
 <style>
-	table, th, td {
-	  border: 1px solid black;
-	  border-collapse: collapse;
-	}
+.vertical-menu {
+  width: 200px;
+}
+
+.vertical-menu a {
+  background-color: #eee;
+  color: black;
+  display: block;
+  padding: 12px;
+  text-decoration: none;
+}
+
+.vertical-menu a:hover {
+  background-color: #ccc;
+}
+
+.vertical-menu a.active {
+  background-color: #04AA6D;
+  color: white;
+}
 </style>
 	<h1>Customers</h1>
 
@@ -12,17 +28,10 @@
 </div>
 
 <div>
-	<table>
-		<tr>
-			<th>ID</th>
-			<th>Name</th>
-			<th>Address</th>
-		</tr>
-	
-	{{range .Customers}}
-		<tr><td>{{.CustomerId}}</td><td>{{.Name}}</td></tr>
-
-
-	{{end}}
-	</table>
+	<div class="vertical-menu">
+		<a href="#" class="active">Home</a>
+		{{range .Customers}}
+			<a href={{.URLLine}}>{{.MenuLine}}</a>
+			{{end}}
+	  </div>
 </div>

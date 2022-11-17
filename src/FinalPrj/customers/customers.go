@@ -1,9 +1,10 @@
 package customers
 
 import (
-	"encoding/csv"
+	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type Customer struct {
@@ -14,6 +15,8 @@ type Customer struct {
 	State      string
 	Zip        string
 	Phone      string
+	MenuLine   string
+	URLLine    string
 	vehicles   []Car
 }
 
@@ -25,23 +28,25 @@ type Car struct {
 	LastCarWash   string
 	LastOilChange string
 }
+type CustData struct {
+	CustomerCount int
+	Customers     []Customer
+}
 
-func ReadCustFile(fName string) ([]Customer, error) {
+// LoadCustomers returns a slice of strings read from fileName, one
+// string per line.
+func LoadCustomers(fileName string) ([]Customer, error) {
 
-	csvFile, err := os.Open(fName)
-	if err != nil {
+	var customers []Customer
+	file, err := os.Open(fileName)
+	if os.IsNotExist(err) {
 		return nil, err
 	}
-	fmt.Println("Successfully Opened CSV file")
-	defer csvFile.Close()
-
-	custFile := make([]Customer, 0)
-
-	csvLines, err := csv.NewReader(csvFile).ReadAll()
-	if err != nil {
-		fmt.Println(err)
-	}
-	for _, line := range csvLines {
+	// check(err)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.Split(scanner.Text(), ",")
 		cust := Customer{
 			CustomerId: line[0],
 			Name:       line[1],
@@ -50,13 +55,10 @@ func ReadCustFile(fName string) ([]Customer, error) {
 			State:      line[4],
 			Zip:        line[5],
 		}
-
-		custFile = append(custFile, cust)
-
+		cust.MenuLine = fmt.Sprintf("%s\t\t\t%s\t", cust.CustomerId, cust.Name)
+		cust.URLLine = fmt.Sprintf("http://localhost:8080/customerview/custID=%s", cust.CustomerId)
+		customers = append(customers, cust)
 	}
-
-	fmt.Println(custFile)
-
-	return custFile, nil
-
+	// check()
+	return customers, scanner.Err()
 }
