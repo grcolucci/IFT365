@@ -13,6 +13,7 @@ type Service struct {
 
 type Dealer struct {
 	dealerID  string
+	name      string
 	telephone string
 	address   string
 	city      string
@@ -20,9 +21,11 @@ type Dealer struct {
 	zip       string
 	carWash   Service
 	oilChange Service
+	MenuLine  string
+	URLLine   string
 }
 
-func ReadDealerFile(fName string) ([]Dealer, error) {
+func LoadDealers(fName string) (map[string]Dealer, error) {
 
 	csvFile, err := os.Open(fName)
 	if err != nil {
@@ -31,7 +34,7 @@ func ReadDealerFile(fName string) ([]Dealer, error) {
 	fmt.Println("Successfully Opened CSV file")
 	defer csvFile.Close()
 
-	dealerFile := make([]Dealer, 0)
+	dealers := make(map[string]Dealer)
 
 	csvLines, err := csv.NewReader(csvFile).ReadAll()
 	if err != nil {
@@ -52,13 +55,15 @@ func ReadDealerFile(fName string) ([]Dealer, error) {
 
 		stat.oilChange.serviceName = "Premium"
 		stat.oilChange.servicePrice = "$45.99"
+		stat.MenuLine = fmt.Sprintf("%10s%20s", stat.dealerID, stat.name)
+		stat.URLLine = fmt.Sprintf("http://localhost:8080/customers?dealerID=%s", stat.dealerID)
 
-		dealerFile = append(dealerFile, stat)
+		dealers[stat.dealerID] = stat
 
 	}
 
-	fmt.Printf("\n# of dealers loaded: %d - %s\n", len(dealerFile), dealerFile)
+	fmt.Printf("\n# of dealers loaded: %d\n", len(dealers))
 
-	return dealerFile, nil
+	return dealers, nil
 
 }

@@ -28,10 +28,18 @@
 </div>
 
 <div>
+  <div>
+    <div class="vertical-menu">
+      <a href="http://localhost:8080/customers" class="active">All Dealers</a>
+      {{range .Dealers}}
+        <a name="dealers" href={{.URLLine}}>{{.MenuLine}}</a>
+        {{end}}
+      </div>
+  </div>
 	<div class="vertical-menu">
 		<a href="#" class="active">Home</a>
 		{{range .Customers}}
-			<a href={{.URLLine}}>{{.MenuLine}}</a>
+			<a name="customers" href={{.URLLine}}>{{.MenuLine}}</a>
 			{{end}}
 	  </div>
 </div>

@@ -16,6 +16,7 @@ type Customer struct {
 	Zip        string
 	Phone      string
 	MenuLine   string
+	DealerID   string
 	URLLine    string
 	vehicles   []Car
 }
@@ -28,14 +29,10 @@ type Car struct {
 	LastCarWash   string
 	LastOilChange string
 }
-type CustData struct {
-	CustomerCount int
-	Customers     map[string]Customer
-}
 
 // LoadCustomers returns a slice of strings read from fileName, one
 // string per line.
-func LoadCustomers(fileName string) (map[string]Customer, error) {
+func LoadCustomers(fileName string, dealerID string) (map[string]Customer, error) {
 
 	customers := make(map[string]Customer)
 	file, err := os.Open(fileName)
@@ -47,6 +44,10 @@ func LoadCustomers(fileName string) (map[string]Customer, error) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := strings.Split(scanner.Text(), ",")
+		if dealerID != "" && dealerID != line[6] {
+			continue
+		}
+
 		cust := Customer{
 			CustomerId: line[0],
 			Name:       line[1],
@@ -54,8 +55,9 @@ func LoadCustomers(fileName string) (map[string]Customer, error) {
 			City:       line[3],
 			State:      line[4],
 			Zip:        line[5],
+			DealerID:   line[6],
 		}
-		cust.MenuLine = fmt.Sprintf("%s\t\t\t%s\t", cust.CustomerId, cust.Name)
+		cust.MenuLine = fmt.Sprintf("%10s%20s", cust.CustomerId, cust.Name)
 		cust.URLLine = fmt.Sprintf("http://localhost:8080/customerview?custID=%s", cust.CustomerId)
 		customers[cust.CustomerId] = cust
 	}

@@ -6,7 +6,14 @@ import (
 	"net/http"
 
 	"github.com/IFT365/src/FinalPrj/customers"
+	"github.com/IFT365/src/FinalPrj/dealers"
 )
+
+type CustData struct {
+	CustomerCount int
+	Customers     map[string]customers.Customer
+	Dealers       map[string]dealers.Dealer
+}
 
 func check(err error) {
 	if err != nil {
@@ -14,13 +21,21 @@ func check(err error) {
 	}
 }
 func custHandler(writer http.ResponseWriter, request *http.Request) {
-	customersList, err := customers.LoadCustomers("customers.csv")
+
+	dealerID := request.URL.Query().Get("dealerID")
+
+	customersList, err := customers.LoadCustomers("customers.csv", dealerID)
 	check(err)
+
+	dealersList, err := dealers.LoadDealers("dealers.csv")
+	check(err)
+
 	html, err := template.ParseFiles("customers.html")
 	check(err)
-	custData := customers.CustData{
+	custData := CustData{
 		CustomerCount: len(customersList),
 		Customers:     customersList,
+		Dealers:       dealersList,
 	}
 	err = html.Execute(writer, custData)
 	check(err)
@@ -29,7 +44,7 @@ func custHandler(writer http.ResponseWriter, request *http.Request) {
 func custviewHandler(writer http.ResponseWriter, request *http.Request) {
 
 	custID := request.URL.Query().Get("custID")
-	customersList, err := customers.LoadCustomers("customers.csv")
+	customersList, err := customers.LoadCustomers("customers.csv", "")
 	check(err)
 	html, err := template.ParseFiles("customerview.html")
 	check(err)
