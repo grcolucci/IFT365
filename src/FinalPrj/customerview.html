@@ -25,17 +25,24 @@
 <div>
 
         <form action="/customer/update" method="POST">
-                <div><input type="text" name="CustomerID" value={{.CustomerId}}></div>
-                <div><input type="text" name="Name" value={{.Name}}></div>
-                <div><input type="text" name="Address" value={{.Address}}></div>
-                <div><input type="text" name="City" value={{.City}}>,<input type="text" name="State" value={{.State}}>
-                        <input type="text" name="Zip" value={{.Zip}}></div>
-                <div><input type="submit"></div>
+                <div><input type="text" name="CustomerID" value={{.Customer.CustomerId}}></div>
+                <div><input type="text" name="Name" value={{.Customer.Name}}></div>
+                <div><input type="text" name="Address" value={{.Customer.Address}}></div>
+                <div><input type="text" name="City" value={{.Customer.City}}>,<input type="text" name="State" value={{.Customer.State}}>
+                        <input type="text" name="Zip" value={{.Customer.Zip}}></div>
+                <div><input type="Submit"></div>
               </form>
+
+
         
         
-        total signatures -
-	<a href="/guestbook/new">Add Your Signature</a>
+       
+
+        <div class="vertical-menu">
+		<a href="#" class="active">Services</a>
+		<a name="Oil Change" href="http://localhost:8080/customerview?servID=001">{{.Dealer.OilChange.Name}}</a>
+		<a name="carwash" href="http://localhost:8080/customerview?servID=002">{{.Dealer.CarWash.Name}}</a>	
+	  </div>
 </div>
 
 

@@ -34,11 +34,12 @@ type Car struct {
 // string per line.
 func LoadCustomers(fileName string, dealerID string) (map[string]Customer, error) {
 
-	customers := make(map[string]Customer)
 	file, err := os.Open(fileName)
 	if os.IsNotExist(err) {
-		return customers, err
+		return nil, err
 	}
+
+	customersList := make(map[string]Customer)
 	// check(err)
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
@@ -59,8 +60,8 @@ func LoadCustomers(fileName string, dealerID string) (map[string]Customer, error
 		}
 		cust.MenuLine = fmt.Sprintf("%10s%20s", cust.CustomerId, cust.Name)
 		cust.URLLine = fmt.Sprintf("http://localhost:8080/customerview?custID=%s", cust.CustomerId)
-		customers[cust.CustomerId] = cust
+		customersList[cust.CustomerId] = cust
 	}
 	// check()
-	return customers, scanner.Err()
+	return customersList, scanner.Err()
 }

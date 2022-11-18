@@ -9,10 +9,18 @@ import (
 	"github.com/IFT365/src/FinalPrj/dealers"
 )
 
+var CustomersList = make(map[string]customers.Customer)
+var DealersList = make(map[string]dealers.Dealer)
+
 type CustData struct {
 	CustomerCount int
 	Customers     map[string]customers.Customer
 	Dealers       map[string]dealers.Dealer
+}
+
+type CustViewData struct {
+	Customer customers.Customer
+	Dealer   dealers.Dealer
 }
 
 func check(err error) {
@@ -20,22 +28,28 @@ func check(err error) {
 		log.Fatal(err)
 	}
 }
+
+func loadfiles() error {
+	var err error
+	CustomersList, err = customers.LoadCustomers("customers.csv", "")
+	check(err)
+
+	DealersList, err = dealers.LoadDealers("dealers.csv")
+	check(err)
+
+	return err
+
+}
 func custHandler(writer http.ResponseWriter, request *http.Request) {
 
-	dealerID := request.URL.Query().Get("dealerID")
-
-	customersList, err := customers.LoadCustomers("customers.csv", dealerID)
-	check(err)
-
-	dealersList, err := dealers.LoadDealers("dealers.csv")
-	check(err)
+	//dealerID := request.URL.Query().Get("dealerID")
 
 	html, err := template.ParseFiles("customers.html")
 	check(err)
 	custData := CustData{
-		CustomerCount: len(customersList),
-		Customers:     customersList,
-		Dealers:       dealersList,
+		CustomerCount: len(CustomersList),
+		Customers:     CustomersList,
+		Dealers:       DealersList,
 	}
 	err = html.Execute(writer, custData)
 	check(err)
@@ -44,12 +58,13 @@ func custHandler(writer http.ResponseWriter, request *http.Request) {
 func custviewHandler(writer http.ResponseWriter, request *http.Request) {
 
 	custID := request.URL.Query().Get("custID")
-	customersList, err := customers.LoadCustomers("customers.csv", "")
-	check(err)
-	html, err := template.ParseFiles("customerview.html")
-	check(err)
 
-	err = html.Execute(writer, customersList[custID])
+	err := loadfiles()
+	html, err := template.ParseFiles("customerview.html")
+
+	custviewdata := CustViewData{Customer: CustomersList[custID], Dealer: DealersList[CustomersList[custID].DealerID]}
+
+	err = html.Execute(writer, custviewdata)
 	check(err)
 }
 
@@ -57,10 +72,7 @@ func viewHandler(writer http.ResponseWriter, request *http.Request) {
 	// signatures := getStrings("signatures.txt")
 	html, err := template.ParseFiles("carservice.html")
 	check(err)
-	//guestbook := Guestbook{
-	//	SignatureCount: len(signatures),
-	//	Signatures:     signatures,
-	//}
+
 	err = html.Execute(writer, nil)
 	check(err)
 
@@ -68,11 +80,14 @@ func viewHandler(writer http.ResponseWriter, request *http.Request) {
 
 func main() {
 
+	err := loadfiles()
+	check(err)
+
 	http.HandleFunc("/carservice", viewHandler)
 	http.HandleFunc("/customers", custHandler)
 	http.HandleFunc("/customerview", custviewHandler)
 
-	err := http.ListenAndServe("localhost:8080", nil)
+	err = http.ListenAndServe("localhost:8080", nil)
 	log.Fatal(err)
 
 }
