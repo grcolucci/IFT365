@@ -8,17 +8,26 @@ import (
 )
 
 type Customer struct {
-	CustomerId string
-	Name       string
-	Address    string
-	City       string
-	State      string
-	Zip        string
-	Phone      string
-	MenuLine   string
-	DealerID   string
-	URLLine    string
-	vehicles   []Car
+	CustomerId    string
+	Name          string
+	Address       string
+	City          string
+	State         string
+	Zip           string
+	Phone         string
+	MenuLine      string
+	DealerID      string
+	URLLine       string
+	vehicles      []Car
+	LastOilChange LastTransaction
+	LastCarWash   LastTransaction
+}
+
+type LastTransaction struct {
+	ServiceDate string
+	ServiceType string
+	Dealer      string
+	Technician  string
 }
 
 type Car struct {
