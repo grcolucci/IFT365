@@ -10,10 +10,12 @@ import (
 
 	"github.com/IFT365/src/FinalPrj/customers"
 	"github.com/IFT365/src/FinalPrj/dealers"
+	"github.com/IFT365/src/FinalPrj/technicians"
 )
 
 var CustomersList = make(map[string]customers.Customer)
 var DealersList = make(map[string]dealers.Dealer)
+var TechniciansList = make(map[string]technicians.Technician)
 
 type CustData struct {
 	CustomerCount int
@@ -38,6 +40,9 @@ func loadfiles() error {
 	check(err)
 
 	DealersList, err = dealers.LoadDealers("dealers.csv")
+	check(err)
+
+	TechniciansList, err = technicians.LoadTechnicians("technicians.csv")
 	check(err)
 
 	return err
