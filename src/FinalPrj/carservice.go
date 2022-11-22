@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/IFT365/src/FinalPrj/customers"
 	"github.com/IFT365/src/FinalPrj/dealers"
@@ -40,11 +43,14 @@ func loadfiles() error {
 	return err
 
 }
-func custHandler(writer http.ResponseWriter, request *http.Request) {
+func mainHandler(writer http.ResponseWriter, request *http.Request) {
 
-	//dealerID := request.URL.Query().Get("dealerID")
+	dealerID := request.URL.Query().Get("dealerID")
 
-	html, err := template.ParseFiles("customers.html")
+	CustomersList, err := customers.LoadCustomers("customers.csv", dealerID)
+	check(err)
+
+	html, err := template.ParseFiles("carservice.html")
 	check(err)
 	custData := CustData{
 		CustomerCount: len(CustomersList),
@@ -60,12 +66,52 @@ func custviewHandler(writer http.ResponseWriter, request *http.Request) {
 	custID := request.URL.Query().Get("custID")
 
 	err := loadfiles()
-	html, err := template.ParseFiles("customerview.html")
+	check(err)
 
+	html, err := template.ParseFiles("customerview.html")
+	check(err)
 	custviewdata := CustViewData{Customer: CustomersList[custID], Dealer: DealersList[CustomersList[custID].DealerID]}
 
 	err = html.Execute(writer, custviewdata)
 	check(err)
+}
+
+func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
+
+	custID := request.URL.Query().Get("custID")
+
+	if request.FormValue("OilChange") == "001" {
+		fmt.Println("OC")
+		row := fmt.Sprintf("%s,%s,%s,",
+			time.Now().Format(time.RFC3339),
+			custID,
+			request.FormValue("OilChange"))
+
+		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
+		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
+		check(err)
+		_, err = fmt.Fprintln(file, row)
+		check(err)
+		err = file.Close()
+		check(err)
+	}
+
+	if request.FormValue("CarWash") == "002" {
+		fmt.Println("CW")
+		row := fmt.Sprintf("%s,%s,%s",
+			time.Now().Format(time.RFC3339),
+			custID,
+			request.FormValue("CarWash"))
+
+		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
+		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
+		check(err)
+		_, err = fmt.Fprintln(file, row)
+		check(err)
+		err = file.Close()
+		check(err)
+	}
+
 }
 
 func viewHandler(writer http.ResponseWriter, request *http.Request) {
@@ -83,13 +129,50 @@ func main() {
 	err := loadfiles()
 	check(err)
 
-	http.HandleFunc("/carservice", viewHandler)
-	http.HandleFunc("/customers", custHandler)
+	http.HandleFunc("/carservice", mainHandler)
+	//	http.HandleFunc("/customers", custHandler)
 	http.HandleFunc("/customerview", custviewHandler)
+	http.HandleFunc("/carservice/new", newcustomerHandler)
+	http.HandleFunc("/carservice/addnew", newcustomerpostHandler)
+	http.HandleFunc("/serviceaction", serviceactionHandler)
 
 	err = http.ListenAndServe("localhost:8080", nil)
 	log.Fatal(err)
 
+}
+
+// func newHandler displays a form to enter a signature.
+func newcustomerHandler(writer http.ResponseWriter, request *http.Request) {
+	html, err := template.ParseFiles("newcustomer.html")
+	check(err)
+	err = html.Execute(writer, nil)
+	check(err)
+}
+func newcustomerpostHandler(writer http.ResponseWriter, request *http.Request) {
+
+	fmt.Println("New Customer Writing")
+	newID := len(CustomersList)
+
+	row := fmt.Sprintf("%d,%s,%s,%s,%s,%s,%s,", newID,
+		request.FormValue("Name"),
+		request.FormValue("Address"),
+		request.FormValue("City"),
+		request.FormValue("State"),
+		request.FormValue("Zip"),
+		request.FormValue("dealer"))
+
+	options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
+	file, err := os.OpenFile("customers.csv", options, os.FileMode(0600))
+	check(err)
+	_, err = fmt.Fprintln(file, row)
+	check(err)
+	err = file.Close()
+	check(err)
+
+	err = loadfiles()
+	check(err)
+
+	http.Redirect(writer, request, "/carservice", http.StatusFound)
 }
 
 /*

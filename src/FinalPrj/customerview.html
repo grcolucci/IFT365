@@ -43,6 +43,17 @@
 		<a name="Oil Change" href="http://localhost:8080/customerview?servID=001">{{.Dealer.OilChange.Name}}</a>
 		<a name="carwash" href="http://localhost:8080/customerview?servID=002">{{.Dealer.CarWash.Name}}</a>	
 	  </div>
+
+    <div>
+      <form action="/serviceaction" method="get">
+        <input type="checkbox" name="OilChange" value="001">
+        <label for="vehicle1"> Oil Change</label><br>
+        <input type="checkbox" name="CarWash" value="002">
+        <label for="vehicle2"> Car Wash</label><br>
+        <input type="hidden" value={{.Customer.CustomerId}} name="custID">
+        <input type="submit" value="Purchase Service">
+      </form>
+    </div>
 </div>
 
 

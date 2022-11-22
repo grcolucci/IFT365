@@ -59,7 +59,7 @@ func LoadDealers(fName string) (map[string]Dealer, error) {
 		stat.OilChange.Name = "Premium"
 		stat.OilChange.Price = "$45.99"
 		stat.MenuLine = fmt.Sprintf("%10s%20s", stat.DealerID, stat.Name)
-		stat.URLLine = fmt.Sprintf("http://localhost:8080/customers?dealerID=%s", stat.DealerID)
+		stat.URLLine = fmt.Sprintf("http://localhost:8080/carservice?dealerID=%s", stat.DealerID)
 
 		dealersList[stat.DealerID] = stat
 

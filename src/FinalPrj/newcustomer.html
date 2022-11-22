@@ -1,0 +1,55 @@
+<style>
+.vertical-menu {
+  width: 200px;
+}
+
+.vertical-menu a {
+  background-color: #eee;
+  color: black;
+  display: block;
+  padding: 12px;
+  text-decoration: none;
+}
+
+.vertical-menu a:hover {
+  background-color: #ccc;
+}
+
+.vertical-menu a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+</style>
+	<h1>New Customers</h1>
+
+<div>
+
+        <form action="/carservice/addnew" method="POST">
+                <div><input type="text" name="CustomerID" ></div>
+                <div><input type="text" name="Name" ></div>
+                <div><input type="text" name="Address" ></div>
+                <div><input type="text" name="City" >,<input type="text" name="State" >
+                        <input type="text" name="Zip" ></div>
+                        
+                        <input type="radio" id="dealer001" name="dealer" value="001">
+<label for="dealer001">Dealer 001</label><br>
+<input type="radio" id="dealer002" name="dealer" value="002">
+<label for="dealer002">Dealer 002</label><br>
+<input type="radio" id="dealer003" name="dealer" value="003">
+<label for="dealer003">Dealer 003</label>
+                <div><input type="Submit"></div>
+              </form>
+
+
+        
+        
+       
+
+        <div class="vertical-menu">
+		<a href="#" class="active">Services</a>
+		<a name="Oil Change" href="http://localhost:8080/customerview?servID=001">{{.Dealer.OilChange.Name}}</a>
+		<a name="carwash" href="http://localhost:8080/customerview?servID=002">{{.Dealer.CarWash.Name}}</a>	
+	  </div>
+</div>
+
+

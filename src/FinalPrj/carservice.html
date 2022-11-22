@@ -1,0 +1,45 @@
+<style>
+.vertical-menu {
+  width: 200px;
+}
+
+.vertical-menu a {
+  background-color: #eee;
+  color: black;
+  display: block;
+  padding: 12px;
+  text-decoration: none;
+}
+
+.vertical-menu a:hover {
+  background-color: #ccc;
+}
+
+.vertical-menu a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+</style>
+	<h1>Customers</h1>
+
+<div>
+	{{.CustomerCount}} total signatures -
+	<a href="/carservice/new">Add New Customer</a>
+</div>
+
+<div>
+  <div>
+    <div class="vertical-menu">
+      <a href="http://localhost:8080/carservice" class="active">All Dealers</a>
+      {{range .Dealers}}
+        <a name="dealers" href={{.URLLine}}>{{.MenuLine}}</a>
+        {{end}}
+      </div>
+  </div>
+	<div class="vertical-menu">
+		<a href="#" class="active">Home</a>
+		{{range .Customers}}
+			<a name="customers" href={{.URLLine}}>{{.MenuLine}}</a>
+			{{end}}
+	  </div>
+</div>
