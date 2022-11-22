@@ -25,8 +25,9 @@ type CustData struct {
 }
 
 type CustViewData struct {
-	Customer customers.Customer
-	Dealer   dealers.Dealer
+	Customer   customers.Customer
+	Dealer     dealers.Dealer
+	Technician technicians.Technician
 }
 
 func check(err error) {
@@ -76,7 +77,9 @@ func custviewHandler(writer http.ResponseWriter, request *http.Request) {
 
 	html, err := template.ParseFiles("customerview.html")
 	check(err)
-	custviewdata := CustViewData{Customer: CustomersList[custID], Dealer: DealersList[CustomersList[custID].DealerID]}
+	custviewdata := CustViewData{Customer: CustomersList[custID],
+		Dealer:     DealersList[CustomersList[custID].DealerID],
+		Technician: TechniciansList[CustomersList[custID].LastOilChange.Technician]}
 
 	err = html.Execute(writer, custviewdata)
 	check(err)
@@ -84,26 +87,35 @@ func custviewHandler(writer http.ResponseWriter, request *http.Request) {
 
 func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 
+	updateCustRec := false
 	custID := request.URL.Query().Get("custID")
 
 	rand.Seed(time.Now().UnixNano())
 	randIndex := rand.Intn((len(TechniciansList) - 1 + 1) + 0)
 
+	cust := customers.Customer{
+		CustomerId: custID,
+		Name:       CustomersList[custID].Name,
+		Address:    CustomersList[custID].Address,
+		City:       CustomersList[custID].City,
+		State:      CustomersList[custID].State,
+		Zip:        CustomersList[custID].Zip,
+		DealerID:   CustomersList[custID].DealerID}
+
 	if request.FormValue("OilChange") == "001" {
-		fmt.Println("OC")
-		row := fmt.Sprintf("%s,%s,%s,",
-			time.Now().Format(time.RFC3339),
+
+		updateCustRec = true
+		row := fmt.Sprintf("%s,%s,%s,%s,",
+			time.Now().Format("01-02-2006"),
 			custID,
 			request.FormValue("OilChange"),
-			TechniciansList[string(randIndex)],
+			TechniciansList[fmt.Sprintf("%d", randIndex)].ID,
 		)
 
-		fmt.Println(CustomersList[custID].LastOilChange.Dealer)
-		CustomersList[custID].Address = custID
-		CustomersList[custID].LastOilChange.Dealer = CustomersList[custID].DealerID
-		CustomersList[custID].LastOilChange.ServiceDate = time.Now().Format(time.RFC3339)
-		CustomersList[custID].LastOilChange.ServiceType = request.FormValue("OilChange")
-		CustomersList[custID].LastOilChange.Technician = TechniciansList[string(randIndex)]
+		cust.LastOilChange.Dealer = CustomersList[custID].DealerID
+		cust.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
+		cust.LastOilChange.ServiceType = request.FormValue("OilChange")
+		cust.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%d", randIndex)].ID
 
 		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
 		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
@@ -112,23 +124,45 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		check(err)
 		err = file.Close()
 		check(err)
+
+		if request.FormValue("CarWash") == "002" {
+
+			updateCustRec = true
+
+			fmt.Println("CW")
+			row := fmt.Sprintf("%s,%s,%s",
+				time.Now().Format("01-02-2006"),
+				custID,
+				request.FormValue("CarWash"))
+
+			options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
+			file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
+			check(err)
+			_, err = fmt.Fprintln(file, row)
+			check(err)
+			err = file.Close()
+			check(err)
+
+			cust.LastOilChange.Dealer = CustomersList[custID].DealerID
+			cust.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
+			cust.LastOilChange.ServiceType = request.FormValue("OilChange")
+			cust.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%d", randIndex)].ID
+		}
+
+		if updateCustRec {
+			// Delete customer recod from list, then re-add updated record
+
+			delete(CustomersList, custID)
+
+			CustomersList[cust.CustomerId] = cust
+
+			// Write out the updated list to the file
+			err = customers.UpdateRecords(CustomersList)
+			check(err)
+		}
 	}
 
-	if request.FormValue("CarWash") == "002" {
-		fmt.Println("CW")
-		row := fmt.Sprintf("%s,%s,%s",
-			time.Now().Format(time.RFC3339),
-			custID,
-			request.FormValue("CarWash"))
-
-		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
-		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
-		check(err)
-		_, err = fmt.Fprintln(file, row)
-		check(err)
-		err = file.Close()
-		check(err)
-	}
+	http.Redirect(writer, request, fmt.Sprintf("http://localhost:8080/customerview?custID=%s", custID), http.StatusFound)
 
 }
 
@@ -171,7 +205,7 @@ func newcustomerpostHandler(writer http.ResponseWriter, request *http.Request) {
 	fmt.Println("New Customer Writing")
 	newID := len(CustomersList)
 
-	row := fmt.Sprintf("%d,%s,%s,%s,%s,%s,%s,", newID,
+	row := fmt.Sprintf("%d,%s,%s,%s,%s,%s,%s,,,,,,,,,", newID,
 		request.FormValue("Name"),
 		request.FormValue("Address"),
 		request.FormValue("City"),

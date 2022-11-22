@@ -32,17 +32,13 @@
                         <input type="text" name="Zip" value={{.Customer.Zip}}></div>
                 <div><input type="Submit"></div>
               </form>
+<div>
+  <div>
+  Last Oil Change - Date: <b>{{.Customer.LastOilChange.ServiceDate}}</b> Dealer: {{.Dealer.Name}} Technician: {{.Technician.Name}}</div>
+  <div>Last Car Wash -  Date: {{.Customer.LastCarWash.ServiceDate}}</div>
+</div>
 
 
-        
-        
-       
-
-        <div class="vertical-menu">
-		<a href="#" class="active">Services</a>
-		<a name="Oil Change" href="http://localhost:8080/customerview?servID=001">{{.Dealer.OilChange.Name}}</a>
-		<a name="carwash" href="http://localhost:8080/customerview?servID=002">{{.Dealer.CarWash.Name}}</a>	
-	  </div>
 
     <div>
       <form action="/serviceaction" method="get">

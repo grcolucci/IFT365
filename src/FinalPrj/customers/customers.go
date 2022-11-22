@@ -8,17 +8,17 @@ import (
 )
 
 type Customer struct {
-	CustomerId    string
-	Name          string
-	Address       string
-	City          string
-	State         string
-	Zip           string
-	Phone         string
-	MenuLine      string
-	DealerID      string
-	URLLine       string
-	vehicles      []Car
+	CustomerId string
+	Name       string
+	Address    string
+	City       string
+	State      string
+	Zip        string
+	Phone      string
+	MenuLine   string
+	DealerID   string
+	URLLine    string
+	//	vehicles      []Car
 	LastOilChange LastTransaction
 	LastCarWash   LastTransaction
 }
@@ -67,6 +67,16 @@ func LoadCustomers(fileName string, dealerID string) (map[string]Customer, error
 			Zip:        line[5],
 			DealerID:   line[6],
 		}
+		cust.LastOilChange.ServiceDate = line[7]
+		cust.LastOilChange.ServiceType = line[8]
+		cust.LastOilChange.Dealer = line[9]
+		cust.LastOilChange.Technician = line[10]
+
+		cust.LastCarWash.ServiceDate = line[11]
+		cust.LastCarWash.ServiceType = line[12]
+		cust.LastCarWash.Dealer = line[13]
+		cust.LastCarWash.Technician = line[14]
+
 		cust.MenuLine = fmt.Sprintf("%10s%20s", cust.CustomerId, cust.Name)
 		cust.URLLine = fmt.Sprintf("http://localhost:8080/customerview?custID=%s", cust.CustomerId)
 		customersList[cust.CustomerId] = cust
@@ -75,9 +85,9 @@ func LoadCustomers(fileName string, dealerID string) (map[string]Customer, error
 	return customersList, scanner.Err()
 }
 
-func UpdateRecords(customerList map[string]Customer) error {
+func UpdateRecords(customersList map[string]Customer) error {
 
-	fmt.Println("New Customer Writing")
+	fmt.Println("Update Customer File")
 
 	// options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
 	options := os.O_WRONLY | os.O_CREATE
@@ -86,21 +96,31 @@ func UpdateRecords(customerList map[string]Customer) error {
 		return err
 	}
 
-	for _, cust := range customerList {
-
-		row := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s", cust.CustomerId,
+	fmt.Println(len(customersList))
+	for i, cust := range customersList {
+		fmt.Println(i)
+		fmt.Println(cust)
+		row := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,", cust.CustomerId,
 			cust.Name,
 			cust.Address,
 			cust.City,
 			cust.State,
 			cust.Zip,
 			cust.DealerID,
-			cust.LastCarWash,
-			cust.LastOilChange,
+			cust.LastOilChange.ServiceDate,
+			cust.LastOilChange.ServiceType,
+			cust.LastOilChange.Dealer,
+			cust.LastOilChange.Technician,
+			cust.LastCarWash.ServiceDate,
+			cust.LastCarWash.ServiceType,
+			cust.LastCarWash.Dealer,
+			cust.LastCarWash.Technician,
 		)
 
 		_, err = fmt.Fprintln(file, row)
-		return err
+		if err != nil {
+			return err
+		}
 	}
 
 	err = file.Close()

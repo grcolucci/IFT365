@@ -44,11 +44,12 @@ func LoadDealers(fName string) (map[string]Dealer, error) {
 	for _, line := range csvLines {
 		stat := Dealer{
 			DealerID:  line[0],
-			Telephone: line[1],
-			Address:   line[2],
-			City:      line[3],
-			State:     line[4],
-			Zip:       line[5],
+			Name:      line[1],
+			Telephone: line[2],
+			Address:   line[3],
+			City:      line[4],
+			State:     line[5],
+			Zip:       line[6],
 		}
 
 		stat.CarWash.ID = "001"
