@@ -32,7 +32,7 @@ func LoadDealers(fName string) (map[string]Dealer, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Successfully Opened CSV file")
+	fmt.Println("Successfully Opened CSV file:", fName)
 	defer csvFile.Close()
 
 	dealersList := make(map[string]Dealer)

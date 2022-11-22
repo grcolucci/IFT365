@@ -94,13 +94,16 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 	randIndex := rand.Intn((len(TechniciansList) - 1 + 1) + 0)
 
 	cust := customers.Customer{
-		CustomerId: custID,
-		Name:       CustomersList[custID].Name,
-		Address:    CustomersList[custID].Address,
-		City:       CustomersList[custID].City,
-		State:      CustomersList[custID].State,
-		Zip:        CustomersList[custID].Zip,
-		DealerID:   CustomersList[custID].DealerID}
+		CustomerId:    custID,
+		Name:          CustomersList[custID].Name,
+		Address:       CustomersList[custID].Address,
+		City:          CustomersList[custID].City,
+		State:         CustomersList[custID].State,
+		Zip:           CustomersList[custID].Zip,
+		DealerID:      CustomersList[custID].DealerID,
+		LastOilChange: CustomersList[custID].LastOilChange,
+		LastCarWash:   CustomersList[custID].LastCarWash,
+	}
 
 	if request.FormValue("OilChange") == "001" {
 
@@ -124,42 +127,41 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		check(err)
 		err = file.Close()
 		check(err)
+	}
+	if request.FormValue("CarWash") == "002" {
 
-		if request.FormValue("CarWash") == "002" {
+		updateCustRec = true
 
-			updateCustRec = true
+		fmt.Println("CW")
+		row := fmt.Sprintf("%s,%s,%s",
+			time.Now().Format("01-02-2006"),
+			custID,
+			request.FormValue("CarWash"))
 
-			fmt.Println("CW")
-			row := fmt.Sprintf("%s,%s,%s",
-				time.Now().Format("01-02-2006"),
-				custID,
-				request.FormValue("CarWash"))
+		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
+		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
+		check(err)
+		_, err = fmt.Fprintln(file, row)
+		check(err)
+		err = file.Close()
+		check(err)
 
-			options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
-			file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
-			check(err)
-			_, err = fmt.Fprintln(file, row)
-			check(err)
-			err = file.Close()
-			check(err)
+		cust.LastOilChange.Dealer = CustomersList[custID].DealerID
+		cust.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
+		cust.LastOilChange.ServiceType = request.FormValue("OilChange")
+		cust.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%d", randIndex)].ID
+	}
 
-			cust.LastOilChange.Dealer = CustomersList[custID].DealerID
-			cust.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
-			cust.LastOilChange.ServiceType = request.FormValue("OilChange")
-			cust.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%d", randIndex)].ID
-		}
+	if updateCustRec {
+		// Delete customer recod from list, then re-add updated record
 
-		if updateCustRec {
-			// Delete customer recod from list, then re-add updated record
+		delete(CustomersList, custID)
 
-			delete(CustomersList, custID)
+		CustomersList[cust.CustomerId] = cust
 
-			CustomersList[cust.CustomerId] = cust
-
-			// Write out the updated list to the file
-			err = customers.UpdateRecords(CustomersList)
-			check(err)
-		}
+		// Write out the updated list to the file
+		err := customers.UpdateRecords(CustomersList)
+		check(err)
 	}
 
 	http.Redirect(writer, request, fmt.Sprintf("http://localhost:8080/customerview?custID=%s", custID), http.StatusFound)
