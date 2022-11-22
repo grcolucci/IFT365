@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"time"
@@ -85,12 +86,24 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 
 	custID := request.URL.Query().Get("custID")
 
+	rand.Seed(time.Now().UnixNano())
+	randIndex := rand.Intn((len(TechniciansList) - 1 + 1) + 0)
+
 	if request.FormValue("OilChange") == "001" {
 		fmt.Println("OC")
 		row := fmt.Sprintf("%s,%s,%s,",
 			time.Now().Format(time.RFC3339),
 			custID,
-			request.FormValue("OilChange"))
+			request.FormValue("OilChange"),
+			TechniciansList[string(randIndex)],
+		)
+
+		fmt.Println(CustomersList[custID].LastOilChange.Dealer)
+		CustomersList[custID].Address = custID
+		CustomersList[custID].LastOilChange.Dealer = CustomersList[custID].DealerID
+		CustomersList[custID].LastOilChange.ServiceDate = time.Now().Format(time.RFC3339)
+		CustomersList[custID].LastOilChange.ServiceType = request.FormValue("OilChange")
+		CustomersList[custID].LastOilChange.Technician = TechniciansList[string(randIndex)]
 
 		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
 		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
@@ -171,13 +184,14 @@ func newcustomerpostHandler(writer http.ResponseWriter, request *http.Request) {
 	check(err)
 	_, err = fmt.Fprintln(file, row)
 	check(err)
+
 	err = file.Close()
 	check(err)
 
 	err = loadfiles()
 	check(err)
 
-	http.Redirect(writer, request, "/carservice", http.StatusFound)
+	http.Redirect(writer, request, fmt.Sprintf("http://localhost:8080/customerview?custID=%d", newID), http.StatusFound)
 }
 
 /*

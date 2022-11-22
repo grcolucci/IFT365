@@ -74,3 +74,36 @@ func LoadCustomers(fileName string, dealerID string) (map[string]Customer, error
 	// check()
 	return customersList, scanner.Err()
 }
+
+func UpdateRecords(customerList map[string]Customer) error {
+
+	fmt.Println("New Customer Writing")
+
+	// options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
+	options := os.O_WRONLY | os.O_CREATE
+	file, err := os.OpenFile("customers.csv", options, os.FileMode(0600))
+	if err != nil {
+		return err
+	}
+
+	for _, cust := range customerList {
+
+		row := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s", cust.CustomerId,
+			cust.Name,
+			cust.Address,
+			cust.City,
+			cust.State,
+			cust.Zip,
+			cust.DealerID,
+			cust.LastCarWash,
+			cust.LastOilChange,
+		)
+
+		_, err = fmt.Fprintln(file, row)
+		return err
+	}
+
+	err = file.Close()
+	return err
+
+}
