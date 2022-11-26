@@ -1,4 +1,11 @@
 <style>
+ 
+.myDiv {
+  border: 5px outset red;
+  background-color: lightblue;    
+  text-align: left;
+}
+
 .vertical-menu {
   width: 200px;
 }
@@ -22,31 +29,34 @@
 </style>
 	<h1>Customers</h1>
 
-<div>
+<div class="myDiv">
 
-        <form action="/customer/update" method="POST">
+        <form action="/carservice/updatecustomer" method="POST">
                 <div><input type="text" name="CustomerID" value={{.Customer.CustomerId}}></div>
                 <div><input type="text" name="Name" value={{.Customer.Name}}></div>
                 <div><input type="text" name="Address" value={{.Customer.Address}}></div>
                 <div><input type="text" name="City" value={{.Customer.City}}>,<input type="text" name="State" value={{.Customer.State}}>
                         <input type="text" name="Zip" value={{.Customer.Zip}}></div>
-                <div><input type="Submit"></div>
+                <div><input type="Submit" value="Update Customer Record"></div>
               </form>
 <div>
+  <div></div>
   <div>
-  Last Oil Change - Date: <b>{{.Customer.LastOilChange.ServiceDate}}</b> Dealer: {{.Dealer.Name}} Technician: {{.Technician.Name}}</div>
-  <div>Last Car Wash -  Date: {{.Customer.LastCarWash.ServiceDate}}</div>
+  Last Oil Change - Date: <b>{{.Customer.LastOilChange.ServiceDate}}</b> Dealer: <b>{{.Dealer.Name}}</b> Technician: <b>{{.Technician.Name}}</b></div>
+  <div>Last Car Wash -  Date: <b>{{.Customer.LastCarWash.ServiceDate}}</b> Dealer: <b>{{.Dealer.Name}}</b> Technician: <b>{{.Technician.Name}}</b></div>
 </div>
 
-
+<div></div>
 
     <div>
       <form action="/serviceaction" method="get">
-        <input type="checkbox" name="OilChange" value="001">
-        <label for="vehicle1"> Oil Change</label><br>
-        <input type="checkbox" name="CarWash" value="002">
-        <label for="vehicle2"> Car Wash</label><br>
+        <input type="checkbox" name="OilChange" value={{.Dealer.OilChange.ID}}>
+        <label for="vehicle1"> {{.Dealer.OilChange.Name}}</label><br>
+        <input type="checkbox" name="CarWash" value={{.Dealer.CarWash.ID}}>
+        <label for="vehicle2"> {{.Dealer.CarWash.Name}}</label><br>
         <input type="hidden" value={{.Customer.CustomerId}} name="custID">
+        <input type="hidden" value="001" name="OilChangeTech">
+        <input type="hidden" value="002" name="CarWashTech">
         <input type="submit" value="Purchase Service">
       </form>
     </div>

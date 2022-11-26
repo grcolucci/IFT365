@@ -1,0 +1,51 @@
+<style>
+    .vertical-menu {
+      width: 200px;
+    }
+    
+    .vertical-menu a {
+      background-color: #eee;
+      color: black;
+      display: block;
+      padding: 12px;
+      text-decoration: none;
+    }
+    
+    .vertical-menu a:hover {
+      background-color: #ccc;
+    }
+    
+    .vertical-menu a.active {
+      background-color: #04AA6D;
+      color: white;
+    }
+    </style>
+        <h1>Transactions</h1>
+        <div>
+            <form action="/carservice/transactionsview" method="get">
+                <div>
+              <input type="radio" id="date" name="sortby" value="date" checked="true">
+              <label for="vehicle1">"Sort By Date: </label><br>
+              <input type="radio" id="type" name="sortby" value="type">
+              <label for="vehicle2">"Sort By Service Type: </label>
+</div><div>
+              <input type="radio" id="ascending" name="order" value="true">
+              <label for="vehicle1">"ascending: </label><br>
+              <input type="radio" id="decending" name="order" value="false">
+              <label for="vehicle2">"Descending "</label>
+              </div>
+         
+              <input type="submit" value="Submit">
+            </form>
+          </div>
+    
+    <div>
+        <div class="vertical-menu">
+            <ol>
+            {{range .}}
+                <li>{{.MenuLine}}</li>
+                {{end}}
+            </ol>
+          </div>
+    </div>
+    

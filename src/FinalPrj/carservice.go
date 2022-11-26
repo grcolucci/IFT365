@@ -7,16 +7,19 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/IFT365/src/FinalPrj/customers"
 	"github.com/IFT365/src/FinalPrj/dealers"
 	"github.com/IFT365/src/FinalPrj/technicians"
+	"github.com/IFT365/src/FinalPrj/transactions"
 )
 
 var CustomersList = make(map[string]customers.Customer)
 var DealersList = make(map[string]dealers.Dealer)
 var TechniciansList = make(map[string]technicians.Technician)
+var TransactionsList = make([]transactions.Transaction, 0)
 
 type CustData struct {
 	CustomerCount int
@@ -47,9 +50,34 @@ func loadfiles() error {
 	TechniciansList, err = technicians.LoadTechnicians("technicians.csv")
 	check(err)
 
+	//TransactionsList, err = transactions.LoadTransactions("transactions.csv")
+	//check(err)
+
 	return err
 
 }
+
+func transactionListHandler(writer http.ResponseWriter, request *http.Request) {
+
+	var sortBy transactions.SortList
+	var filterBy transactions.FilterList
+
+	sortBy.SortField = request.FormValue("sortby")
+	sortBy.Ascending, _ = strconv.ParseBool(request.URL.Query().Get("ascending"))
+
+	filterBy.FilterBy = request.URL.Query().Get("filterField")
+	filterBy.FilterValue = request.URL.Query().Get("filterValue")
+
+	transactionsList, err := transactions.LoadTransactions("transactions.csv", sortBy, filterBy)
+	check(err)
+
+	html, err := template.ParseFiles("transactions.html")
+	check(err)
+
+	err = html.Execute(writer, transactionsList)
+	check(err)
+}
+
 func mainHandler(writer http.ResponseWriter, request *http.Request) {
 
 	dealerID := request.URL.Query().Get("dealerID")
@@ -92,6 +120,9 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 
 	rand.Seed(time.Now().UnixNano())
 	randIndex := rand.Intn((len(TechniciansList) - 1 + 1) + 0)
+	if randIndex <= 0 {
+		randIndex = 1
+	}
 
 	cust := customers.Customer{
 		CustomerId:    custID,
@@ -112,13 +143,15 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 			time.Now().Format("01-02-2006"),
 			custID,
 			request.FormValue("OilChange"),
-			TechniciansList[fmt.Sprintf("%d", randIndex)].ID,
+			request.FormValue("OilChangeTech"),
 		)
 
 		cust.LastOilChange.Dealer = CustomersList[custID].DealerID
 		cust.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
 		cust.LastOilChange.ServiceType = request.FormValue("OilChange")
-		cust.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%d", randIndex)].ID
+		fmt.Printf("Rand %03d\n", randIndex)
+		cust.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
+		//		cust.LastOilChange.Technician = TechniciansList["001"].ID
 
 		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
 		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
@@ -133,10 +166,12 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		updateCustRec = true
 
 		fmt.Println("CW")
-		row := fmt.Sprintf("%s,%s,%s",
+		row := fmt.Sprintf("%s,%s,%s,%s",
 			time.Now().Format("01-02-2006"),
 			custID,
-			request.FormValue("CarWash"))
+			request.FormValue("CarWash"),
+			request.FormValue("CarWashTech"),
+		)
 
 		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
 		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
@@ -146,10 +181,10 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		err = file.Close()
 		check(err)
 
-		cust.LastOilChange.Dealer = CustomersList[custID].DealerID
-		cust.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
-		cust.LastOilChange.ServiceType = request.FormValue("OilChange")
-		cust.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%d", randIndex)].ID
+		cust.LastCarWash.Dealer = CustomersList[custID].DealerID
+		cust.LastCarWash.ServiceDate = time.Now().Format("01-02-2006")
+		cust.LastCarWash.ServiceType = request.FormValue("CarWash")
+		cust.LastCarWash.Technician = TechniciansList["001"].ID
 	}
 
 	if updateCustRec {
@@ -158,6 +193,8 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		delete(CustomersList, custID)
 
 		CustomersList[cust.CustomerId] = cust
+
+		fmt.Println(CustomersList)
 
 		// Write out the updated list to the file
 		err := customers.UpdateRecords(CustomersList)
@@ -185,10 +222,13 @@ func main() {
 
 	http.HandleFunc("/carservice", mainHandler)
 	//	http.HandleFunc("/customers", custHandler)
-	http.HandleFunc("/customerview", custviewHandler)
+	http.HandleFunc("/carservice/customerview", custviewHandler)
+	http.HandleFunc("/carservice/updatecustomer", updatecustHandler)
+
 	http.HandleFunc("/carservice/new", newcustomerHandler)
 	http.HandleFunc("/carservice/addnew", newcustomerpostHandler)
 	http.HandleFunc("/serviceaction", serviceactionHandler)
+	http.HandleFunc("/carservice/transactionsview", transactionListHandler)
 
 	err = http.ListenAndServe("localhost:8080", nil)
 	log.Fatal(err)
@@ -228,6 +268,45 @@ func newcustomerpostHandler(writer http.ResponseWriter, request *http.Request) {
 	check(err)
 
 	http.Redirect(writer, request, fmt.Sprintf("http://localhost:8080/customerview?custID=%d", newID), http.StatusFound)
+}
+
+func updatecustHandler(writer http.ResponseWriter, request *http.Request) {
+
+	fmt.Println("Update Customer Writing")
+	custID := request.FormValue("CustomerID")
+
+	row := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,",
+		custID,
+		request.FormValue("Name"),
+		request.FormValue("Address"),
+		request.FormValue("City"),
+		request.FormValue("State"),
+		request.FormValue("Zip"),
+		request.FormValue("dealer"),
+		CustomersList[custID].DealerID,
+		CustomersList[custID].LastOilChange.ServiceDate,
+		CustomersList[custID].LastOilChange.ServiceType,
+		CustomersList[custID].LastOilChange.Dealer,
+		CustomersList[custID].LastOilChange.Technician,
+		CustomersList[custID].LastCarWash.ServiceDate,
+		CustomersList[custID].LastCarWash.ServiceType,
+		CustomersList[custID].LastCarWash.Dealer,
+		CustomersList[custID].LastCarWash.Technician)
+
+	delete(CustomersList, custID)
+	options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
+	file, err := os.OpenFile("customers.csv", options, os.FileMode(0600))
+	check(err)
+	_, err = fmt.Fprintln(file, row)
+	check(err)
+
+	err = file.Close()
+	check(err)
+
+	err = loadfiles()
+	check(err)
+
+	http.Redirect(writer, request, fmt.Sprintf("http://localhost:8080/carservice/customerview?custID=%s", custID), http.StatusFound)
 }
 
 /*

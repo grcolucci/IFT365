@@ -78,7 +78,7 @@ func LoadCustomers(fileName string, dealerID string) (map[string]Customer, error
 		cust.LastCarWash.Technician = line[14]
 
 		cust.MenuLine = fmt.Sprintf("%10s%20s", cust.CustomerId, cust.Name)
-		cust.URLLine = fmt.Sprintf("http://localhost:8080/customerview?custID=%s", cust.CustomerId)
+		cust.URLLine = fmt.Sprintf("http://localhost:8080/carservice/customerview?custID=%s", cust.CustomerId)
 		customersList[cust.CustomerId] = cust
 	}
 	// check()
@@ -96,10 +96,7 @@ func UpdateRecords(customersList map[string]Customer) error {
 		return err
 	}
 
-	fmt.Println(len(customersList))
-	for i, cust := range customersList {
-		fmt.Println(i)
-		fmt.Println(cust)
+	for _, cust := range customersList {
 		row := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,", cust.CustomerId,
 			cust.Name,
 			cust.Address,

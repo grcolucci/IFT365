@@ -52,13 +52,14 @@ func LoadDealers(fName string) (map[string]Dealer, error) {
 			Zip:       line[6],
 		}
 
-		stat.CarWash.ID = "001"
-		stat.CarWash.Name = "Full Service"
+		stat.OilChange.ID = "001"
+		stat.OilChange.Name = "Premium Oil Change"
+		stat.OilChange.Price = "$45.99"
+
+		stat.CarWash.ID = "002"
+		stat.CarWash.Name = "Full Service Car Wash"
 		stat.CarWash.Price = "$10.99"
 
-		stat.OilChange.ID = "002"
-		stat.OilChange.Name = "Premium"
-		stat.OilChange.Price = "$45.99"
 		stat.MenuLine = fmt.Sprintf("%10s%20s", stat.DealerID, stat.Name)
 		stat.URLLine = fmt.Sprintf("http://localhost:8080/carservice?dealerID=%s", stat.DealerID)
 
