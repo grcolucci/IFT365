@@ -24,17 +24,23 @@
         <div>
             <form action="/carservice/transactionsview" method="get">
                 <div>
-              <input type="radio" id="date" name="sortby" value="date" checked="true">
-              <label for="vehicle1">"Sort By Date: </label><br>
+              <input type="radio" id="date" name="sortby" value="date">
+              <label for="vehicle1">Date: </label><br>
               <input type="radio" id="type" name="sortby" value="type">
-              <label for="vehicle2">"Sort By Service Type: </label>
-</div><div>
+              <label for="vehicle2">Service Type: </label>
+              <input type="radio" id="type" name="sortby" value="dealer">
+              <label for="vehicle2">Dealer: </label>
+
+              <input type="radio" id="type" name="sortby" value="tech">
+              <label for="vehicle2">Technician: </label>
+
+<br><br>
               <input type="radio" id="ascending" name="order" value="true">
-              <label for="vehicle1">"ascending: </label><br>
+              <label for="vehicle1">"Ascending: </label><br>
               <input type="radio" id="decending" name="order" value="false">
               <label for="vehicle2">"Descending "</label>
               </div>
-         
+              <br><br>
               <input type="submit" value="Submit">
             </form>
           </div>

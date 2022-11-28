@@ -69,7 +69,7 @@ func transactionListHandler(writer http.ResponseWriter, request *http.Request) {
 	var filterBy transactions.FilterList
 
 	sortBy.SortField = request.FormValue("sortby")
-	sortBy.Ascending, _ = strconv.ParseBool(request.URL.Query().Get("ascending"))
+	sortBy.Ascending, _ = strconv.ParseBool(request.URL.Query().Get("order"))
 
 	filterBy.FilterBy = request.URL.Query().Get("filterField")
 	filterBy.FilterValue = request.URL.Query().Get("filterValue")
@@ -247,7 +247,7 @@ func main() {
 func newcustomerHandler(writer http.ResponseWriter, request *http.Request) {
 	html, err := template.ParseFiles("newcustomer.html")
 	check(err)
-	err = html.Execute(writer, nil)
+	err = html.Execute(writer, DealersList)
 	check(err)
 }
 func newcustomerpostHandler(writer http.ResponseWriter, request *http.Request) {
@@ -275,7 +275,7 @@ func newcustomerpostHandler(writer http.ResponseWriter, request *http.Request) {
 	err = loadfiles()
 	check(err)
 
-	http.Redirect(writer, request, fmt.Sprintf("http://localhost:8080/customerview?custID=%d", newID), http.StatusFound)
+	http.Redirect(writer, request, fmt.Sprintf("http://localhost:8080/carservice/customerview?custID=%d", newID), http.StatusFound)
 }
 
 func updatecustHandler(writer http.ResponseWriter, request *http.Request) {

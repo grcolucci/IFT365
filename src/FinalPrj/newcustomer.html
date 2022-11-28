@@ -25,31 +25,20 @@
 <div>
 
         <form action="/carservice/addnew" method="POST">
-                <div><input type="text" name="CustomerID" ></div>
-                <div><input type="text" name="Name" ></div>
-                <div><input type="text" name="Address" ></div>
-                <div><input type="text" name="City" >,<input type="text" name="State" >
-                        <input type="text" name="Zip" ></div>
-                        
-                        <input type="radio" id="dealer001" name="dealer" value="001">
-<label for="dealer001">Dealer 001</label><br>
-<input type="radio" id="dealer002" name="dealer" value="002">
-<label for="dealer002">Dealer 002</label><br>
-<input type="radio" id="dealer003" name="dealer" value="003">
-<label for="dealer003">Dealer 003</label>
+                <div><label for="CustomerID">ID:</label><input type="text" name="CustomerID" ></div>
+                <div><label for="Name">Name:</label><input type="text" name="Name" ></div>
+                <div><label for="Address">Street:</label><input type="text" name="Address" ></div>
+                <div><label for="City">City:</label><input type="text" name="City" >,
+                  <label for="State">State:</label><input type="text" name="State" >
+                  <label for="Zip">Zip Code:</label><input type="text" name="Zip" ></div>
+                        <br>
+                  {{range .}}
+                          <input type="radio" id="dealer001" name="dealer" value={{.DealerID}}>
+                              <label for="dealer001">{{.Name}}</label><br>
+        {{end}}
+        <br>
                 <div><input type="Submit"></div>
               </form>
-
-
-        
-        
-       
-
-        <div class="vertical-menu">
-		<a href="#" class="active">Services</a>
-		<a name="Oil Change" href="http://localhost:8080/customerview?servID=001">{{.Dealer.OilChange.Name}}</a>
-		<a name="carwash" href="http://localhost:8080/customerview?servID=002">{{.Dealer.CarWash.Name}}</a>	
-	  </div>
 </div>
 
 

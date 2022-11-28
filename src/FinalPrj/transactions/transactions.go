@@ -65,19 +65,50 @@ func LoadTransactions(fName string, sortBy SortList, filterBy FilterList) ([]Tra
 			if filterBy.FilterValue == stat.CustomerID {
 				transactionsList = append(transactionsList, stat)
 			}
+		} else if filterBy.FilterBy == "custID" {
+			if filterBy.FilterValue == stat.CustomerID {
+				transactionsList = append(transactionsList, stat)
+			}
 		} else {
 			transactionsList = append(transactionsList, stat)
 		}
 
 	}
 
-	if sortBy.SortField == "tech" {
+	if sortBy.SortField == "date" {
+		// Sort by last name
+		sort.Slice(transactionsList, func(i, j int) bool {
+			if sortBy.Ascending {
+				return transactionsList[i].Date < transactionsList[j].Date
+			} else {
+				return transactionsList[i].Date > transactionsList[j].Date
+			}
+		})
+	} else if sortBy.SortField == "type" {
+		// Sort by last name
+		sort.Slice(transactionsList, func(i, j int) bool {
+			if sortBy.Ascending {
+				return transactionsList[i].ServiceType < transactionsList[j].ServiceType
+			} else {
+				return transactionsList[i].ServiceType > transactionsList[j].ServiceType
+			}
+		})
+	} else if sortBy.SortField == "tech" {
 		// Sort by last name
 		sort.Slice(transactionsList, func(i, j int) bool {
 			if sortBy.Ascending {
 				return transactionsList[i].Technician < transactionsList[j].Technician
 			} else {
 				return transactionsList[i].Technician > transactionsList[j].Technician
+			}
+		})
+	} else if sortBy.SortField == "price" {
+		// Sort by last name
+		sort.Slice(transactionsList, func(i, j int) bool {
+			if sortBy.Ascending {
+				return transactionsList[i].Price < transactionsList[j].Price
+			} else {
+				return transactionsList[i].Price > transactionsList[j].Price
 			}
 		})
 	}
