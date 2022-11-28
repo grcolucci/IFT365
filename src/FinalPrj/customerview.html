@@ -4,6 +4,13 @@
   border: 5px outset red;
   background-color: lightblue;    
   text-align: left;
+  font-size: 18;
+}
+input[type="text"] {
+    font-size:18px;
+}
+input[type="submit"] {
+    font-size:18px;
 }
 
 .vertical-menu {
@@ -32,7 +39,7 @@
 <div class="myDiv">
 
         <form action="/carservice/updatecustomer" method="POST">
-                <div><input type="text" name="CustomerID" value={{.Customer.CustomerId}}></div>
+                <div><input type="text" name="CustomerID" value={{.Customer.CustomerId}} readonly></div>
                 <div><input type="text" name="Name" value={{.Customer.Name}}></div>
                 <div><input type="text" name="Address" value={{.Customer.Address}}></div>
                 <div><input type="text" name="City" value={{.Customer.City}}>,<input type="text" name="State" value={{.Customer.State}}>

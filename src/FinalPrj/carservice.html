@@ -1,6 +1,10 @@
 <style>
+ 
 .vertical-menu {
-  width: 200px;
+  width: 600px;
+  text-align: center;
+  align-items: center;
+  align-content: center;
 }
 
 .vertical-menu a {
@@ -19,27 +23,68 @@
   background-color: #04AA6D;
   color: white;
 }
+
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 10px;
+  background-color: #2196F3;
+  padding: 10px;
+}
+/*background-color: rgba(255, 255, 255, 0.8);*/
+.grid-container > div {
+
+  text-align: center;
+  align-items: center;
+  padding: 20px 0;
+ 
+}
+
+.item1 {
+  grid-row-start: 1;
+  grid-row-end: 3;
+  font-size: 18px;
+  align-content: center;
+}
+
+.item2 {
+  background-color: aquamarine;
+  font-size: 30px;
+}
+
+.item3 {
+  background-color: yellow;
+  font-size: 30px;
+}
 </style>
-	<h1>Customers</h1>
+<h1>Car Service Manager</h1>
 
-<div>
-	{{.CustomerCount}} total signatures -
-	<a href="/carservice/new">Add New Customer</a>
-</div>
+<div class="grid-container">
+  <div class="item1">
+  
 
-<div>
-  <div>
     <div class="vertical-menu">
       <a href="http://localhost:8080/carservice" class="active">All Dealers</a>
       {{range .Dealers}}
         <a name="dealers" href={{.URLLine}}>{{.MenuLine}}</a>
         {{end}}
       </div>
-  </div>
-	<div class="vertical-menu">
-		<a href="#" class="active">Home</a>
-		{{range .Customers}}
-			<a name="customers" href={{.URLLine}}>{{.MenuLine}}</a>
-			{{end}}
+	  <div class="vertical-menu">
+		  <a href="#" class="active">Number of customers: {{.CustomerCount}}</a>
+		  {{range .Customers}}
+			  <a name="customers" href={{.URLLine}}>{{.MenuLine}}</a>
+			  {{end}}
 	  </div>
+    </div>
+    <div class="item2">
+      <a href="/carservice/new">Add New Customer</a><p>
+      <a href="http://localhost:8080/carservice/transactionsview" class="active">View Transactions</a>
+      </p>
+    </div>
+    <div class="item3">glenn3</div>
+    <div class="item4">glenn4</div>
+    <div class="item5">glenn5</div>
+    <div class="item6">glenn6</div>
+    <div class="item7">glenn7</div>
+    <div class="item8">glenn8</div>
 </div>
