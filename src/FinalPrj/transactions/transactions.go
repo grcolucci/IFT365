@@ -12,7 +12,7 @@ type Transaction struct {
 	CustomerID  string
 	ServiceType string
 	Technician  string
-	Price		float64
+	Price       float64
 	MenuLine    string
 }
 
@@ -53,7 +53,7 @@ func LoadTransactions(fName string, sortBy SortList, filterBy FilterList) ([]Tra
 			Technician:  line[3],
 		}
 
-		stat.ServiceTypeName = 
+		//	stat.ServiceTypeName =
 
 		stat.MenuLine = fmt.Sprintf("%15s\t%10s\t%10s\t\t\t%10s",
 			stat.Date,
