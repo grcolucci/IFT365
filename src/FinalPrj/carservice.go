@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"html/template"
 	"log"
@@ -173,48 +174,63 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 	if request.FormValue("service001") == "001" {
 
 		updateCustRec = true
-		row := fmt.Sprintf("%s,%s,%s,%s,%s",
-			time.Now().Format("01-02-2006"),
+
+		row := []string{time.Now().Format("01-02-2006"),
 			custID,
 			"001",
 			TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
-			ServicesList["001"].Price,
-		)
+			fmt.Sprintf("%f", ServicesList["001"].Price),
+		}
 
 		cust.LastOilChange.Dealer = CustomersList[custID].LastOilChange.Dealer
 		cust.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
 		cust.LastOilChange.ServiceType = "001"
 		fmt.Printf("Rand %03d\n", randIndex)
 		cust.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
-		//		cust.LastOilChange.Technician = TechniciansList["001"].ID
 
 		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
 		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
-		check(err)
-		_, err = fmt.Fprintln(file, row)
-		check(err)
-		err = file.Close()
+
+		if err != nil {
+			log.Fatalln("failed to open file", err)
+		}
+
+		defer file.Close()
+
+		w := csv.NewWriter(file)
+		defer w.Flush()
+
+		err = w.Write(row)
 		check(err)
 	}
+
 	if request.FormValue("service101") == "101" {
 
 		updateCustRec = true
 
 		fmt.Println("CW")
-		row := fmt.Sprintf("%s,%s,%s,%s,",
-			time.Now().Format("01-02-2006"),
+
+		row := []string{time.Now().Format("01-02-2006"),
 			custID,
 			"101",
 			TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
-			ServicesList["101"].Price,
-		)
+			fmt.Sprintf("%f", ServicesList["101"].Price),
+		}
 
 		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
 		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
-		check(err)
-		_, err = fmt.Fprintln(file, row)
-		check(err)
-		err = file.Close()
+
+		if err != nil {
+
+			log.Fatalln("failed to open file", err)
+		}
+
+		defer file.Close()
+
+		w := csv.NewWriter(file)
+		defer w.Flush()
+
+		err = w.Write(row)
 		check(err)
 
 		cust.LastCarWash.Dealer = CustomersList[custID].LastCarWash.Dealer
@@ -229,8 +245,6 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		delete(CustomersList, custID)
 
 		CustomersList[cust.CustomerId] = cust
-
-		fmt.Println(CustomersList)
 
 		// Write out the updated list to the file
 		err := customers.UpdateRecords(CustomersList)
@@ -311,23 +325,26 @@ func newcustomerpostHandler(writer http.ResponseWriter, request *http.Request) {
 	fmt.Println("New Customer Writing")
 	newID := len(CustomersList)
 
-	row := fmt.Sprintf("%d,%s,%s,%s,%s,%s,%s,,,,,,,,,", newID,
+	row := fmt.Sprintf("%d,%s,%s,%s,%s,%s,%s,,,,,,,,,", ,
+	
+	rec := []string{
+		newID,
 		request.FormValue("Name"),
 		request.FormValue("Address"),
 		request.FormValue("City"),
 		request.FormValue("State"),
 		request.FormValue("Zip"),
-		request.FormValue("dealer"))
-
-	options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
-	file, err := os.OpenFile("customers.csv", options, os.FileMode(0600))
-	check(err)
-	_, err = fmt.Fprintln(file, row)
-	check(err)
-
-	err = file.Close()
-	check(err)
-
+		request.FormValue("dealer"),
+		"",	
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		}
+	
 	err = loadfiles()
 	check(err)
 

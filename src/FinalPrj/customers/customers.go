@@ -1,10 +1,9 @@
 package customers
 
 import (
-	"bufio"
+	"encoding/csv"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -55,57 +54,55 @@ func LoadCustomers(fileName string, dealerID string) (map[string]Customer, error
 	if os.IsNotExist(err) {
 		return nil, err
 	}
+	defer file.Close()
+
+	r := csv.NewReader(file)
+
+	records, err := r.ReadAll()
+	if err != nil {
+		return nil, err
+	}
 
 	customersList := make(map[string]Customer)
-	// check(err)
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := strings.Split(scanner.Text(), ",")
-		if dealerID != "" && dealerID != line[6] {
-			continue
-		}
 
+	for _, record := range records {
 		cust := Customer{
-			CustomerId: line[0],
-			Name:       line[1],
-			Address:    line[2],
-			City:       line[3],
-			State:      line[4],
-			Zip:        line[5],
-			DealerID:   line[6],
+			CustomerId: record[0],
+			Name:       record[1],
+			Address:    record[2],
+			City:       record[3],
+			State:      record[4],
+			Zip:        record[5],
+			DealerID:   record[6],
 		}
-		cust.LastOilChange.ServiceDate = line[7]
-		cust.LastOilChange.ServiceType = line[8]
-		cust.LastOilChange.Dealer = line[9]
-		cust.LastOilChange.Technician = line[10]
+		cust.LastOilChange.ServiceDate = record[7]
+		cust.LastOilChange.ServiceType = record[8]
+		cust.LastOilChange.Dealer = record[9]
+		cust.LastOilChange.Technician = record[10]
 
-		cust.LastCarWash.ServiceDate = line[11]
-		cust.LastCarWash.ServiceType = line[12]
-		cust.LastCarWash.Dealer = line[13]
-		cust.LastCarWash.Technician = line[14]
+		cust.LastCarWash.ServiceDate = record[11]
+		cust.LastCarWash.ServiceType = record[12]
+		cust.LastCarWash.Dealer = record[13]
+		cust.LastCarWash.Technician = record[14]
 
 		cust.MenuLine = fmt.Sprintf("%10s%20s", cust.CustomerId, cust.Name)
 		cust.URLLine = fmt.Sprintf("http://localhost:8080/carservice/customerview?custID=%s", cust.CustomerId)
+
 		customersList[cust.CustomerId] = cust
 	}
-	// check()
-	return customersList, scanner.Err()
+
+	return customersList, nil
 }
 
 func UpdateRecords(customersList map[string]Customer) error {
 
 	fmt.Println("Update Customer File")
 
-	// options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
-	options := os.O_WRONLY | os.O_CREATE
-	file, err := os.OpenFile("customers.csv", options, os.FileMode(0600))
-	if err != nil {
-		return err
-	}
+	var newRecs [][]string
 
 	for _, cust := range customersList {
-		row := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,", cust.CustomerId,
+		rec := []string{
+			cust.CustomerId,
 			cust.Name,
 			cust.Address,
 			cust.City,
@@ -120,15 +117,45 @@ func UpdateRecords(customersList map[string]Customer) error {
 			cust.LastCarWash.ServiceType,
 			cust.LastCarWash.Dealer,
 			cust.LastCarWash.Technician,
-		)
-
-		_, err = fmt.Fprintln(file, row)
-		if err != nil {
-			return err
 		}
+
+		newRecs = append(newRecs, rec)
 	}
 
-	err = file.Close()
-	return err
+	//fmt.Fprintln(newRecs[])
+	// options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
+	options := os.O_WRONLY | os.O_CREATE
+	file, err := os.OpenFile("customers.csv", options, os.FileMode(0600))
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	w := csv.NewWriter(file)
+	err = w.WriteAll(newRecs) // calls Flush internally
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func AddRecord(newRec []string) error {
+
+	options := os.O_WRONLY | os.O_CREATE
+	file, err := os.OpenFile("customers.csv", options, os.FileMode(0600))
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	w := csv.NewWriter(file)
+	err = w.Write(newRec) // calls Flush internally
+	if err != nil {
+		return err
+	}
+
+	return nil
 
 }
