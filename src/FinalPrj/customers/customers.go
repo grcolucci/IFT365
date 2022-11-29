@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 type Customer struct {
@@ -21,6 +22,8 @@ type Customer struct {
 	//	vehicles      []Car
 	LastOilChange LastTransaction
 	LastCarWash   LastTransaction
+	LastOCPromo   LastPromo
+	LastCWPromo   LastPromo
 }
 
 type LastTransaction struct {
@@ -28,6 +31,11 @@ type LastTransaction struct {
 	ServiceType string
 	Dealer      string
 	Technician  string
+}
+
+type LastPromo struct {
+	PromoDate time.Time
+	PromoType string
 }
 
 type Car struct {

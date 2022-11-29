@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 )
 
 type Transaction struct {
@@ -53,13 +54,10 @@ func LoadTransactions(fName string, sortBy SortList, filterBy FilterList) ([]Tra
 			Technician:  line[3],
 		}
 
-		//	stat.ServiceTypeName =
-
-		stat.MenuLine = fmt.Sprintf("%15s\t%10s\t%10s\t\t\t%10s",
-			stat.Date,
-			stat.CustomerID,
-			stat.ServiceType,
-			stat.Technician)
+		stat.Price, err = strconv.ParseFloat(line[4], 64)
+		if err != nil {
+			fmt.Println(err)
+		}
 
 		if filterBy.FilterBy == "custID" {
 			if filterBy.FilterValue == stat.CustomerID {

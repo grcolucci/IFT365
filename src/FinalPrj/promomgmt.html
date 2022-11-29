@@ -1,0 +1,111 @@
+<style>
+  .grid-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 10px;
+    background-color: #2196F3;
+    padding: 10px;
+  }
+
+  .grid-container > div {
+  
+    text-align: center;
+    align-items: left;
+    padding: 20px 0;
+    border: 5px outset red;
+    background-color: lightblue;    
+    text-align: left;
+    font-size: 18;
+   
+  }
+  
+  .item1 {
+    font-size: 18px;
+    align-content: center;
+  }
+  
+  .item2 {
+    background-color: aquamarine;
+    font-size: 30px;
+  }
+  
+  .item3 {
+    background-color: yellow;
+    font-size: 30px;
+    align-content: left;
+    padding: 20px 0;
+  }
+  .item4 {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    background-color: yellow;
+    font-size: 30px;
+    align-content: left;
+    padding: 20px 0;
+  }
+.myDiv {
+ 
+}
+input[type="text"] {
+    font-size:18px;
+}
+input[type="submit"] {
+    font-size:18px;
+    font-weight: bold;
+}
+
+.vertical-menu {
+  width: 200px;
+}
+
+.vertical-menu a {
+  background-color: #eee;
+  color: black;
+  display: block;
+  padding: 12px;
+  text-decoration: none;
+}
+
+.vertical-menu a:hover {
+  background-color: #ccc;
+}
+
+.vertical-menu a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+</style>
+	<h1>Promotions Management</h1>
+<div class="grid-container">
+<div class="item1" >
+
+        <form action="/carservice/customerselect" method="POST">
+                <div><label for="lastpromodays">Days Since Last Promo:</label>
+                  <input type="text" name="lastpromodays" value=0>
+                  </div>
+                   <div><input type="Submit" value="Select Customer Records"></div>
+              </form>
+            </div>
+
+
+<div class="item3">
+    <H3><center>Select Promotion type to send</center></H3><br>
+      <form action="/serviceaction" method="get">
+        
+        <input type="radio" name="promotype" value=1>
+        <label for="oilchange"> Oil Change</label><br>
+        <input type="radio" name="promotype" value=2>
+        <label for="carwash"> Car Wash</label><br>
+	
+        <input type="hidden" value="1" name="custID">
+
+        <input type="submit" value="Process Promotion" {{if .DisableButton}}disabled{{end}}>
+      </form>
+</div>
+<div class="item4">
+    Customer Cnt is {{if .CustomerCnt}} {{.CustomerCnt}} {{end}}
+     Button is {{.DisableButton}} {{if .DisableButton}}off{{end}}
+</div>
+</div>
+
+
