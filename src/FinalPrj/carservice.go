@@ -37,6 +37,20 @@ type CustViewData struct {
 	Technician  technicians.Technician
 }
 
+type TransactionsDisplayList struct {
+	serviceDate string
+	DealerName  string
+	ServiceType string
+	TechName    string
+}
+
+type PromoMgmt struct {
+	DaysPrior     string
+	CustomerCnt   int
+	Customers     map[string]customers.Customer
+	DisableButton bool
+}
+
 func check(err error) {
 	if err != nil {
 		log.Fatal(err)
@@ -74,13 +88,25 @@ func transactionListHandler(writer http.ResponseWriter, request *http.Request) {
 	filterBy.FilterBy = request.URL.Query().Get("filterField")
 	filterBy.FilterValue = request.URL.Query().Get("filterValue")
 
-	transactionsList, err := transactions.LoadTransactions("transactions.csv", sortBy, filterBy)
+	TransactionsList, err := transactions.LoadTransactions("transactions.csv", sortBy, filterBy)
 	check(err)
+	var tm string
+	for i, tran := range TransactionsList {
+		tm = fmt.Sprintf("%15s\t%10s\t%10s\t\t\t%10s\t%0.2f",
+			tran.Date,
+			tran.CustomerID,
+			ServicesList[tran.ServiceType].Name,
+			TechniciansList[tran.Technician].Name,
+			tran.Price)
+		nl := &TransactionsList[i]
+		(*nl).MenuLine = tm
+
+	}
 
 	html, err := template.ParseFiles("transactions.html")
 	check(err)
 
-	err = html.Execute(writer, transactionsList)
+	err = html.Execute(writer, TransactionsList)
 	check(err)
 }
 
@@ -147,14 +173,15 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 	if request.FormValue("service001") == "001" {
 
 		updateCustRec = true
-		row := fmt.Sprintf("%s,%s,%s,%s,",
+		row := fmt.Sprintf("%s,%s,%s,%s,%s",
 			time.Now().Format("01-02-2006"),
 			custID,
 			"001",
-			request.FormValue("OilChangeTech"),
+			TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
+			ServicesList["001"].Price,
 		)
 
-		cust.LastOilChange.Dealer = CustomersList[custID].DealerID
+		cust.LastOilChange.Dealer = CustomersList[custID].LastOilChange.Dealer
 		cust.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
 		cust.LastOilChange.ServiceType = "001"
 		fmt.Printf("Rand %03d\n", randIndex)
@@ -174,11 +201,12 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		updateCustRec = true
 
 		fmt.Println("CW")
-		row := fmt.Sprintf("%s,%s,%s,%s",
+		row := fmt.Sprintf("%s,%s,%s,%s,",
 			time.Now().Format("01-02-2006"),
 			custID,
 			"101",
-			request.FormValue("CarWashTech"),
+			TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
+			ServicesList["101"].Price,
 		)
 
 		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
@@ -189,7 +217,7 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		err = file.Close()
 		check(err)
 
-		cust.LastCarWash.Dealer = CustomersList[custID].DealerID
+		cust.LastCarWash.Dealer = CustomersList[custID].LastCarWash.Dealer
 		cust.LastCarWash.ServiceDate = time.Now().Format("01-02-2006")
 		cust.LastCarWash.ServiceType = request.FormValue("101")
 		cust.LastCarWash.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
@@ -214,12 +242,37 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func viewHandler(writer http.ResponseWriter, request *http.Request) {
-	// signatures := getStrings("signatures.txt")
+
 	html, err := template.ParseFiles("carservice.html")
 	check(err)
 
 	err = html.Execute(writer, nil)
 	check(err)
+
+}
+
+func promomgmtHandler(writer http.ResponseWriter, request *http.Request) {
+
+	html, err := template.ParseFiles("promomgmt.html")
+	check(err)
+
+	var promomgmt PromoMgmt
+
+	promomgmt.CustomerCnt = len(CustomersList)
+	promomgmt.Customers = CustomersList
+	if promomgmt.CustomerCnt > 1 {
+		promomgmt.DisableButton = true
+	}
+
+	err = html.Execute(writer, promomgmt)
+	check(err)
+
+}
+
+func promosendHandler(writer http.ResponseWriter, request *http.Request) {
+
+	custID := request.URL.Query().Get("custID")
+	http.Redirect(writer, request, fmt.Sprintf("http://localhost:8080/carservice/customerview?custID=%s", custID), http.StatusFound)
 
 }
 
@@ -235,8 +288,11 @@ func main() {
 
 	http.HandleFunc("/carservice/new", newcustomerHandler)
 	http.HandleFunc("/carservice/addnew", newcustomerpostHandler)
-	http.HandleFunc("/serviceaction", serviceactionHandler)
+	http.HandleFunc("/carservice/serviceaction", serviceactionHandler)
 	http.HandleFunc("/carservice/transactionsview", transactionListHandler)
+
+	http.HandleFunc("/carservice/promomgmt", promomgmtHandler)
+	http.HandleFunc("/carservice/promosend", promosendHandler)
 
 	err = http.ListenAndServe("localhost:8080", nil)
 	log.Fatal(err)
@@ -314,48 +370,3 @@ func updatecustHandler(writer http.ResponseWriter, request *http.Request) {
 
 	http.Redirect(writer, request, fmt.Sprintf("http://localhost:8080/carservice/customerview?custID=%s", custID), http.StatusFound)
 }
-
-/*
-func serviceDate() {
-
-	// Take the user input for a string
-	fmt.Print("Enter the month (1-12): ")
-	reader := bufio.NewReader(os.Stdin)
-	inString, err := reader.ReadString('\n')
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Convert the salary to a float64
-	monthIn, err := strconv.Atoi(strings.TrimSpace(inString))
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Print("Enter the day (1-31): ")
-	reader = bufio.NewReader(os.Stdin)
-	inString, err = reader.ReadString('\n')
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Convert the salary to a float64
-	dayIn, err := strconv.Atoi(strings.TrimSpace(inString))
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Print("Enter the year (1999-Present): ")
-	reader = bufio.NewReader(os.Stdin)
-	inString, err = reader.ReadString('\n')
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Convert the salary to a float64
-	yearIn, err := strconv.Atoi(strings.TrimSpace(inString))
-	if err != nil {
-		log.Fatal(err)
-	}
-	currentTime := time.Date(yearIn, time.Month(monthIn), dayIn, 0, 0, 0, 0, time.UTC)
-
-	fmt.Println(yearIn, monthIn, dayIn)
-	fmt.Println("Time entered: ", currentTime)
-}
-*/
