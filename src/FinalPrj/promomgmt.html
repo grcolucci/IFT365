@@ -105,6 +105,16 @@ input[type="submit"] {
 <div class="item4">
     Customer Cnt is {{if .CustomerCnt}} {{.CustomerCnt}} {{end}}
      Button is {{.DisableButton}} {{if .DisableButton}}off{{end}}
+
+     <table>
+		  {{range .Customers}}
+
+      <tr>
+        <td>.Name</td><td>.Address</td>
+      </tr>
+      {{end}}
+
+     </table>
 </div>
 </div>
 

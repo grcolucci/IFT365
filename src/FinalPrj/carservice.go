@@ -166,6 +166,7 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		City:          CustomersList[custID].City,
 		State:         CustomersList[custID].State,
 		Zip:           CustomersList[custID].Zip,
+		Phone:         CustomersList[custID].Phone,
 		DealerID:      CustomersList[custID].DealerID,
 		LastOilChange: CustomersList[custID].LastOilChange,
 		LastCarWash:   CustomersList[custID].LastCarWash,
@@ -325,17 +326,15 @@ func newcustomerpostHandler(writer http.ResponseWriter, request *http.Request) {
 	fmt.Println("New Customer Writing")
 	newID := len(CustomersList)
 
-	row := fmt.Sprintf("%d,%s,%s,%s,%s,%s,%s,,,,,,,,,", ,
-	
 	rec := []string{
-		newID,
+		fmt.Sprintf("%d", newID),
 		request.FormValue("Name"),
 		request.FormValue("Address"),
 		request.FormValue("City"),
 		request.FormValue("State"),
 		request.FormValue("Zip"),
+		request.FormValue("Phone"),
 		request.FormValue("dealer"),
-		"",	
 		"",
 		"",
 		"",
@@ -343,8 +342,12 @@ func newcustomerpostHandler(writer http.ResponseWriter, request *http.Request) {
 		"",
 		"",
 		"",
-		}
-	
+		"",
+	}
+
+	err := customers.AddRecord((rec))
+	check(err)
+
 	err = loadfiles()
 	check(err)
 

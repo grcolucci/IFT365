@@ -73,17 +73,18 @@ func LoadCustomers(fileName string, dealerID string) (map[string]Customer, error
 			City:       record[3],
 			State:      record[4],
 			Zip:        record[5],
-			DealerID:   record[6],
+			Phone:      record[6],
+			DealerID:   record[7],
 		}
-		cust.LastOilChange.ServiceDate = record[7]
-		cust.LastOilChange.ServiceType = record[8]
-		cust.LastOilChange.Dealer = record[9]
-		cust.LastOilChange.Technician = record[10]
+		cust.LastOilChange.ServiceDate = record[8]
+		cust.LastOilChange.ServiceType = record[9]
+		cust.LastOilChange.Dealer = record[10]
+		cust.LastOilChange.Technician = record[11]
 
-		cust.LastCarWash.ServiceDate = record[11]
-		cust.LastCarWash.ServiceType = record[12]
-		cust.LastCarWash.Dealer = record[13]
-		cust.LastCarWash.Technician = record[14]
+		cust.LastCarWash.ServiceDate = record[12]
+		cust.LastCarWash.ServiceType = record[13]
+		cust.LastCarWash.Dealer = record[14]
+		cust.LastCarWash.Technician = record[15]
 
 		cust.MenuLine = fmt.Sprintf("%10s%20s", cust.CustomerId, cust.Name)
 		cust.URLLine = fmt.Sprintf("http://localhost:8080/carservice/customerview?custID=%s", cust.CustomerId)
@@ -108,6 +109,7 @@ func UpdateRecords(customersList map[string]Customer) error {
 			cust.City,
 			cust.State,
 			cust.Zip,
+			cust.Phone,
 			cust.DealerID,
 			cust.LastOilChange.ServiceDate,
 			cust.LastOilChange.ServiceType,
@@ -122,8 +124,6 @@ func UpdateRecords(customersList map[string]Customer) error {
 		newRecs = append(newRecs, rec)
 	}
 
-	//fmt.Fprintln(newRecs[])
-	// options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
 	options := os.O_WRONLY | os.O_CREATE
 	file, err := os.OpenFile("customers.csv", options, os.FileMode(0600))
 	if err != nil {
@@ -143,7 +143,8 @@ func UpdateRecords(customersList map[string]Customer) error {
 
 func AddRecord(newRec []string) error {
 
-	options := os.O_WRONLY | os.O_CREATE
+	fmt.Println(newRec)
+	options := os.O_WRONLY | os.O_CREATE | os.O_APPEND
 	file, err := os.OpenFile("customers.csv", options, os.FileMode(0600))
 	if err != nil {
 		return err
@@ -151,6 +152,8 @@ func AddRecord(newRec []string) error {
 	defer file.Close()
 
 	w := csv.NewWriter(file)
+	defer w.Flush()
+
 	err = w.Write(newRec) // calls Flush internally
 	if err != nil {
 		return err
