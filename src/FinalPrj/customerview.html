@@ -37,6 +37,12 @@
     align-content: left;
     padding: 20px 0;
   }
+  .item5 {
+    background-color: yellow;
+    font-size: 50px;
+    align-content: center;
+    padding: 20px 0;
+  }
 
 .myDiv {
  
@@ -75,23 +81,22 @@ input[type="submit"] {
 <div class="item1" >
 
         <form action="/carservice/updatecustomer" method="POST">
-                <div><label for="CustomerID">Customer ID:</label>
-                  <input type="text" name="CustomerID" value={{.Customer.CustomerId}} readonly>
-                  </div>
-                <div><label for="Name"></label>Name:</label>
-                  <input type="text" name="Name" value={{.Customer.Name}}></div>
-                <div><label for="Address">Address:</label>
-                  <input type="text" name="Address" value={{.Customer.Address}}></div>
-                <div><label for="City"></label>City:</label>
-                  <input type="text" name="City" value={{.Customer.City}}>,
+                <label for="CustomerID">Customer ID:</label>
+                <input type="text" name="CustomerID" value={{.Customer.CustomerId}} readonly><br>
+                <label for="Name"></label>Name:</label>
+                  <input type="text" name="Name" required value={{.Customer.Name}}><br>
+                <label for="Address">Address:</label>
+                  <input type="text" name="Address" required value={{.Customer.Address}}><br>
+                <label for="City"></label>City:</label>
+                  <input type="text" name="City" required value={{.Customer.City}}><br>
                   <label for="State"></label>State:</label>
-                  <input type="text" name="State" value={{.Customer.State}}>
+                  <input type="text" name="State" required value={{.Customer.State}}><br>
                   <label for="CustomerID">Zip Code:</label>
-                  <input type="text" name="Zip" value={{.Customer.Zip}}></div><br>
+                  <input type="text" name="Zip" required value={{.Customer.Zip}}><br>
                   <label for="CustomerID">Phone:</label>
-                  <input type="text" name="Phone" value={{.Customer.Phone}}></div><br>
-
-                <div><input type="Submit" value="Update Customer Record"></div>
+                  <input type="text" name="Phone" required value={{.Customer.Phone}}><br>
+                  <input type="hidden" name="Dealer" value={{.Customer.DealerID}}>
+                <center><input type="Submit" value="Update Customer Record"></center>
               </form>
             </div>
 <div class="item3">
@@ -104,15 +109,17 @@ input[type="submit"] {
 </div>
 
 <div class="item4">
-    <H3><center>Purchase a service(s)</center></H3><br>
+    <H3><center>Available Services</center></H3><br>
       <form action="/carservice/serviceaction" method="get">
         {{range .Services}}
         <input type="checkbox" name=service{{.ID}} value={{.ID}}>
         <label for=service{{.ID}}> {{.Name}} ${{.Price}}</label><br>
 			  {{end}}
         <input type="hidden" value={{.Customer.CustomerId}} name="custID">
-        <input type="submit" value="Purchase Service">
+        <center><input type="submit" value="Purchase Service"></center>
       </form>
+</div>
+<div class="item5"><center><a href="http://localhost:8080/carservice" class="active">Return to Main Page</a></center>
 </div>
 </div>
 

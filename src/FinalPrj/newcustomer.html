@@ -25,16 +25,15 @@
 <div>
 
         <form action="/carservice/addnew" method="POST">
-                <div><label for="CustomerID">ID:</label><input type="text" name="CustomerID" ></div>
-                <div><label for="Name">Name:</label><input type="text" name="Name" ></div>
-                <div><label for="Address">Street:</label><input type="text" name="Address" ></div>
-                <div><label for="City">City:</label><input type="text" name="City" >,
-                  <label for="State">State:</label><input type="text" name="State" >
-                  <label for="Zip">Zip Code:</label><input type="text" name="Zip" ></div>
-                  <label for="Phone">Phone:</label><input type="text" name="Phone" ></div>
+                <div><label for="Name">Name:</label><input type="text" name="Name" required></div>
+                <div><label for="Address">Street:</label><input type="text" name="Address"required ></div>
+                <div><label for="City">City:</label><input type="text" name="City" required>,
+                  <label for="State">State:</label><input type="text" name="State" required>
+                  <label for="Zip">Zip Code:</label><input type="text" name="Zip" required></div>
+                  <label for="Phone">Phone:</label><input type="text" name="Phone" required></div>
                         <br>
                   {{range .}}
-                          <input type="radio" id="dealer001" name="dealer" value={{.DealerID}}>
+                          <input type="radio" id="dealer001" name="dealer" value={{.DealerID}} required>
                               <label for="dealer001">{{.Name}}</label><br>
         {{end}}
         <br>

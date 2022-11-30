@@ -66,6 +66,14 @@ func LoadCustomers(fileName string, dealerID string) (map[string]Customer, error
 	customersList := make(map[string]Customer)
 
 	for _, record := range records {
+
+		if dealerID != "" {
+			if record[7] != dealerID {
+				continue
+			}
+
+		}
+
 		cust := Customer{
 			CustomerId: record[0],
 			Name:       record[1],

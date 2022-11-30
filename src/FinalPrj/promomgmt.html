@@ -8,20 +8,19 @@
   }
 
   .grid-container > div {
-  
-    text-align: center;
-    align-items: left;
     padding: 20px 0;
     border: 5px outset red;
     background-color: lightblue;    
     text-align: left;
-    font-size: 18;
+   /* font-size: 18; */
    
   }
   
   .item1 {
-    font-size: 18px;
+    font-size: 20px;
     align-content: center;
+    align-items: center;
+    text-align: center;
   }
   
   .item2 {
@@ -31,11 +30,21 @@
   
   .item3 {
     background-color: yellow;
-    font-size: 30px;
+    font-size: 20px;
     align-content: left;
     padding: 20px 0;
   }
   .item4 {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 6;
+    background-color: yellow;
+    font-size: 30px;
+    align-content: left;
+    padding: 20px 0;
+  }
+  .item5 {
     grid-column-start: 1;
     grid-column-end: 3;
     background-color: yellow;
@@ -43,17 +52,26 @@
     align-content: left;
     padding: 20px 0;
   }
-.myDiv {
- 
-}
+
 input[type="text"] {
-    font-size:18px;
+    font-size:20px;
 }
 input[type="submit"] {
-    font-size:18px;
+    font-size:20px;
     font-weight: bold;
 }
 
+a {
+  font-size:20px;
+  align-content: center;
+    align-items: center;
+    text-align: center;
+}
+table {
+font-size: 20;
+
+}
+/*
 .vertical-menu {
   width: 200px;
 }
@@ -73,25 +91,22 @@ input[type="submit"] {
 .vertical-menu a.active {
   background-color: #04AA6D;
   color: white;
-}
+} */
 </style>
 	<h1>Promotions Management</h1>
 <div class="grid-container">
 <div class="item1" >
-
         <form action="/carservice/customerselect" method="POST">
-                <div><label for="lastpromodays">Days Since Last Promo:</label>
-                  <input type="text" name="lastpromodays" value=0>
-                  </div>
-                   <div><input type="Submit" value="Select Customer Records"></div>
+                <label for="lastpromodays">Days Since Last Promo:</label>
+                  <input type="text" name="lastpromodays" value=0><br>
+                   <input type="Submit" value="Select Customer Records">
               </form>
             </div>
 
 
 <div class="item3">
     <H3><center>Select Promotion type to send</center></H3><br>
-      <form action="/serviceaction" method="get">
-        
+      <form action="/serviceaction" method="get"> 
         <input type="radio" name="promotype" value=1>
         <label for="oilchange"> Oil Change</label><br>
         <input type="radio" name="promotype" value=2>
@@ -110,12 +125,13 @@ input[type="submit"] {
 		  {{range .Customers}}
 
       <tr>
-        <td>.Name</td><td>.Address</td>
+        <td>{{.Name}}</td><td>{{.Address}}</td>
       </tr>
       {{end}}
 
      </table>
 </div>
+<div class="item5"><center><a href="http://localhost:8080/carservice" class="active">Return to Main Page</a></center></div>
 </div>
 
 
