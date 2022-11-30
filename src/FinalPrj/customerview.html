@@ -75,6 +75,11 @@ input[type="submit"] {
   background-color: #04AA6D;
   color: white;
 }
+
+table {
+
+  font-size: 20;
+}
 </style>
 	<h1>Customers</h1>
 <div class="grid-container">
@@ -95,18 +100,37 @@ input[type="submit"] {
                   <input type="text" name="Zip" required value={{.Customer.Zip}}><br>
                   <label for="CustomerID">Phone:</label>
                   <input type="text" name="Phone" required value={{.Customer.Phone}}><br>
+                  <label for="car1year">Car1 Year:</label><input type="text" name="car1year" value={{.Customer.Car1.Year}} required>
+                  <label for="car1brand">Car1 Make:</label><input type="text" name="car1brand" value={{.Customer.Car1.Brand}} required>
+                  <label for="car1model">Car1 Model:</label><input type="text" name="car1model" value={{.Customer.Car1.Model}} required><br><br>
+                  <label for="car2year">Car2 Year:</label><input type="text" name="car2year" value={{.Customer.Car2.Year}} >
+                  <label for="car2brand">Car2 Make:</label><input type="text" name="car2brand" value={{.Customer.Car2.Brand}} >
+                  <label for="car2model">Car2 Model:</label><input type="text" name="car2model" value={{.Customer.Car2.Model}} ><br><br>
+                   <br>
+       
                   <input type="hidden" name="Dealer" value={{.Customer.DealerID}}>
                 <center><input type="Submit" value="Update Customer Record"></center>
               </form>
             </div>
 <div class="item3">
-  <center><h3>Last Oil Change</h3></center> <br>Date: <b>{{.Customer.LastOilChange.ServiceDate}}</b> 
-  <br>Dealer: <b>{{.Dealer.Name}}</b> 
-  <br>Technician: <b>{{.Customer.LastOilChange.Technician}}</b><br><br>
-  <center><h3>Last Car Wash</h3></center> <br>Date: <b>{{.Customer.LastCarWash.ServiceDate}}</b>
-  <br>Dealer: <b>{{.Dealer.Name}}</b>
-  <br>Technician: <b>{{.Customer.LastCarWash.Technician}}</b>
-</div>
+  <center><h3>Last Oil Change</h3></center> <br>
+  
+  <table>
+<tr><td></td><td>Car 1</td><td>Car 2</td></tr>
+<tr><td></td><td>{{.Customer.Car1.LastOilChange.ServiceDate}}</td><td>{{.Customer.Car2.LastOilChange.ServiceDate}}</td></tr>
+<tr><td></td><td>{{.Customer.Car1.LastOilChange.Dealer}}</td><td>{{.Customer.Car2.LastOilChange.Dealer}}</td></tr>
+<tr><td></td><td>{{.Customer.Car1.LastOilChange.Technician}}</td><td>{{.Customer.Car2.LastOilChange.Technician}}</td></tr>
+  </table>
+  
+  
+  <center><h3>Last Car Wash</h3></center> <br>
+  <table>
+    <tr><td></td><td>Car 1</td><td>Car 2</td></tr>
+    <tr><td></td><td>{{.Customer.Car1.LastCarWash.ServiceDate}}</td><td>{{.Customer.Car2.LastCarWash.ServiceDate}}</td></tr>
+    <tr><td></td><td>{{.Customer.Car1.LastCarWash.Dealer}}</td><td>{{.Customer.Car2.LastCarWash.Dealer}}</td></tr>
+    <tr><td></td><td>{{.Customer.Car1.LastCarWash.Technician}}</td><td>{{.Customer.Car2.LastCarWash.Technician}}</td></tr>
+      </table>
+    </div>
 
 <div class="item4">
     <H3><center>Available Services</center></H3><br>

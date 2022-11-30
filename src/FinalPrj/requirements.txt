@@ -1,15 +1,27 @@
 Student Coding Project Criteria - Read this Carefully
-A Service Station has multiple branches and they provide basic services such as Oil Change and Car Wash (Assume there is one type of Oil Change and Car Wash is available). All vehicles are registered at the service station before they can be serviced. Create a program that will send a promotion (or reminder) to the vehicle owner for oil change 6 months since the last oil change.
+A Service Station has multiple branches and they provide 
+basic services such as Oil Change and Car Wash (Assume there 
+is one type of Oil Change and Car Wash is available). 
+All vehicles are registered at the service station before 
+they can be serviced. Create a program that will send a 
+promotion (or reminder) to the vehicle owner for oil change 
+6 months since the last oil change.
 
 Demonstrate:
 
-Given a date, generate a report showing customer information, car, type of service and last date of service.
-Given customer id, generate a report showing details of last coupon notification for each of the service.
+Given a date, generate a report showing customer information, 
+car, type of service and last date of service.
+Given customer id, generate a report showing details of 
+last coupon notification for each of the service.
 Hint:
 
 Create packages for Dealer, Technician, Service, Customer, ServiceTransactionHidtory, CouponNotificationHidtory, etc.
 Make sure the data can be stored in the text file (Comm Separated File or CSV is recommended)
 Allow all operations on each of the records such as add, update, delete and search.
-Load the data into array or slice object from your data files when you start your application and save the data into files before exiting the application.
+Load the data into array or slice object from your data files 
+when you start your application and save the data into files 
+before exiting the application.
 Make sure you have realistic data to test your solution.
-Decide what attributes are needed for each of these packages. Also, the above packages are just a guideline, but you are free to create your own packages and structures.
+Decide what attributes are needed for each of these packages. 
+Also, the above packages are just a guideline, but you are 
+free to create your own packages and structures.

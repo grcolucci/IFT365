@@ -25,13 +25,19 @@
 <div>
 
         <form action="/carservice/addnew" method="POST">
-                <div><label for="Name">Name:</label><input type="text" name="Name" required></div>
-                <div><label for="Address">Street:</label><input type="text" name="Address"required ></div>
-                <div><label for="City">City:</label><input type="text" name="City" required>,
+                <label for="Name">Name:</label><input type="text" name="Name" required><br>
+                <label for="Address">Street:</label><input type="text" name="Address"required ><br>
+                <label for="City">City:</label><input type="text" name="City" required>
                   <label for="State">State:</label><input type="text" name="State" required>
-                  <label for="Zip">Zip Code:</label><input type="text" name="Zip" required></div>
-                  <label for="Phone">Phone:</label><input type="text" name="Phone" required></div>
-                        <br>
+                  <label for="Zip">Zip Code:</label><input type="text" name="Zip" required><br>
+                  <label for="Phone">Phone:</label><input type="text" name="Phone" required><br><br><br>
+                  <label for="car1year">Car1 Year:</label><input type="text" name="car1year" required>
+                  <label for="car1brand">Car1 Make:</label><input type="text" name="car1brand" required>
+                  <label for="car1model">Car1 Model:</label><input type="text" name="car1model" required><br><br>
+                  <label for="car2year">Car2 Year:</label><input type="text" name="car2year" >
+                  <label for="car2brand">Car2 Make:</label><input type="text" name="car2brand" >
+                  <label for="car2model">Car2 Model:</label><input type="text" name="car2model" ><br><br>
+                   <br>
                   {{range .}}
                           <input type="radio" id="dealer001" name="dealer" value={{.DealerID}} required>
                               <label for="dealer001">{{.Name}}</label><br>

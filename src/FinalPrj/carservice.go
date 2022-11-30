@@ -141,8 +141,7 @@ func custviewHandler(writer http.ResponseWriter, request *http.Request) {
 	custviewdata := CustViewData{Customer: CustomersList[custID],
 		Dealer:      DealersList[CustomersList[custID].DealerID],
 		ServicesCnt: len(ServicesList),
-		Services:    ServicesList,
-		Technician:  TechniciansList[CustomersList[custID].LastOilChange.Technician]}
+		Services:    ServicesList}
 
 	err = html.Execute(writer, custviewdata)
 	check(err)
@@ -160,16 +159,18 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	cust := customers.Customer{
-		CustomerId:    custID,
-		Name:          CustomersList[custID].Name,
-		Address:       CustomersList[custID].Address,
-		City:          CustomersList[custID].City,
-		State:         CustomersList[custID].State,
-		Zip:           CustomersList[custID].Zip,
-		Phone:         CustomersList[custID].Phone,
-		DealerID:      CustomersList[custID].DealerID,
-		LastOilChange: CustomersList[custID].LastOilChange,
-		LastCarWash:   CustomersList[custID].LastCarWash,
+		CustomerId: custID,
+		Name:       CustomersList[custID].Name,
+		Address:    CustomersList[custID].Address,
+		City:       CustomersList[custID].City,
+		State:      CustomersList[custID].State,
+		Zip:        CustomersList[custID].Zip,
+		Phone:      CustomersList[custID].Phone,
+		DealerID:   CustomersList[custID].DealerID,
+		Car1:       CustomersList[custID].Car1,
+		Car2:       CustomersList[custID].Car2,
+		//LastOilChange: CustomersList[custID].LastOilChange,
+		//LastCarWash:   CustomersList[custID].LastCarWash,
 	}
 
 	if request.FormValue("service001") == "001" {
@@ -183,11 +184,11 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 			fmt.Sprintf("%f", ServicesList["001"].Price),
 		}
 
-		cust.LastOilChange.Dealer = CustomersList[custID].LastOilChange.Dealer
-		cust.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
-		cust.LastOilChange.ServiceType = "001"
-		fmt.Printf("Rand %03d\n", randIndex)
-		cust.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
+		// cust.LastOilChange.Dealer = CustomersList[custID].LastOilChange.Dealer
+		// cust.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
+		// cust.LastOilChange.ServiceType = "001"
+		// fmt.Printf("Rand %03d\n", randIndex)
+		// cust.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
 
 		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
 		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
@@ -234,10 +235,10 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		err = w.Write(row)
 		check(err)
 
-		cust.LastCarWash.Dealer = CustomersList[custID].LastCarWash.Dealer
-		cust.LastCarWash.ServiceDate = time.Now().Format("01-02-2006")
-		cust.LastCarWash.ServiceType = request.FormValue("101")
-		cust.LastCarWash.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
+		// cust.LastCarWash.Dealer = CustomersList[custID].LastCarWash.Dealer
+		// cust.LastCarWash.ServiceDate = time.Now().Format("01-02-2006")
+		// cust.LastCarWash.ServiceType = request.FormValue("101")
+		// cust.LastCarWash.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
 	}
 
 	if updateCustRec {
@@ -326,26 +327,25 @@ func newcustomerpostHandler(writer http.ResponseWriter, request *http.Request) {
 	fmt.Println("New Customer Writing")
 	newID := len(CustomersList)
 
-	rec := []string{
-		fmt.Sprintf("%d", newID),
-		request.FormValue("Name"),
-		request.FormValue("Address"),
-		request.FormValue("City"),
-		request.FormValue("State"),
-		request.FormValue("Zip"),
-		request.FormValue("Phone"),
-		request.FormValue("dealer"),
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
-		"",
+	cust := customers.Customer{
+		CustomerId: fmt.Sprintf("%d", newID),
+		Name:       request.FormValue("Name"),
+		Address:    request.FormValue("Address"),
+		City:       request.FormValue("City"),
+		State:      request.FormValue("State"),
+		Zip:        request.FormValue("Zip"),
+		Phone:      request.FormValue("Phone"),
+		DealerID:   request.FormValue("dealer"),
 	}
 
-	err := customers.AddRecord((rec))
+	cust.Car1.Year = request.FormValue("car1year")
+	cust.Car1.Brand = request.FormValue("car1brand")
+	cust.Car1.Model = request.FormValue("car1model")
+	cust.Car2.Year = request.FormValue("car2year")
+	cust.Car2.Brand = request.FormValue("car2brand")
+	cust.Car2.Model = request.FormValue("car2model")
+
+	err := customers.AddRecord((cust.ToSlice()))
 	check(err)
 
 	err = loadfiles()
@@ -369,18 +369,24 @@ func updatecustHandler(writer http.ResponseWriter, request *http.Request) {
 		Phone:      request.FormValue("Phone"),
 		DealerID:   request.FormValue("dealer"),
 	}
-	newCust.LastOilChange.ServiceDate = CustomersList[custID].LastOilChange.ServiceDate
-	newCust.LastOilChange.ServiceType = CustomersList[custID].LastOilChange.ServiceType
-	newCust.LastOilChange.Dealer = CustomersList[custID].LastOilChange.Dealer
-	newCust.LastOilChange.Technician = CustomersList[custID].LastOilChange.Technician
 
-	newCust.LastCarWash.ServiceDate = CustomersList[custID].LastCarWash.ServiceDate
-	newCust.LastCarWash.ServiceType = CustomersList[custID].LastCarWash.ServiceType
-	newCust.LastCarWash.Dealer = CustomersList[custID].LastCarWash.Dealer
-	newCust.LastCarWash.Technician = CustomersList[custID].LastCarWash.Technician
+	newCust.Car1.Year = request.FormValue("car1year")
+	newCust.Car1.Brand = request.FormValue("car1brand")
+	newCust.Car1.Model = request.FormValue("car1model")
+
+	newCust.Car1.LastCarWash = CustomersList[custID].Car1.LastCarWash
+	newCust.Car1.LastOilChange = CustomersList[custID].Car1.LastOilChange
+
+	newCust.Car2.Year = request.FormValue("car2year")
+	newCust.Car2.Brand = request.FormValue("car2brand")
+	newCust.Car2.Model = request.FormValue("car2model")
+	newCust.Car2.LastCarWash = CustomersList[custID].Car2.LastCarWash
+	newCust.Car2.LastOilChange = CustomersList[custID].Car2.LastOilChange
+	newCust.LastOCPromo = CustomersList[custID].LastOCPromo
+	newCust.LastCWPromo = CustomersList[custID].LastCWPromo
 
 	delete(CustomersList, custID)
-	fmt.Println(newCust)
+
 	CustomersList[custID] = newCust
 
 	err := customers.UpdateRecords(CustomersList)
