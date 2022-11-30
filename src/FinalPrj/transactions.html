@@ -19,13 +19,22 @@
       background-color: #04AA6D;
       color: white;
     }
+
+    .bold {
+      font-weight: bold;
+    }
+    td, tr {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
     </style>
         <h1>Transactions</h1>
         <div>
             <form action="/carservice/transactionsview" method="get">
-                <div>
+               <b>Sort By:</b>
               <input type="radio" id="date" name="sortby" value="date">
-              <label for="vehicle1">Date: </label><br>
+              <label for="vehicle1">Date: </label>
               <input type="radio" id="type" name="sortby" value="type">
               <label for="vehicle2">Service Type: </label>
               <input type="radio" id="type" name="sortby" value="dealer">
@@ -34,24 +43,38 @@
               <input type="radio" id="type" name="sortby" value="tech">
               <label for="vehicle2">Technician: </label>
 
-<br><br>
+<br><br><b>Order:</b>
               <input type="radio" id="ascending" name="order" value="true">
-              <label for="vehicle1">"Ascending: </label><br>
+              <label for="vehicle1">Ascending:</label>
               <input type="radio" id="decending" name="order" value="false">
-              <label for="vehicle2">"Descending "</label>
-              </div>
+              <label for="vehicle2">Descending</label>
+            
               <br><br>
+              <b>Filter By:</b>
+              <input type="radio" id="ascending" name="filterField" value="date">
+              <label for="vehicle1">Date:</label>
+              <input type="radio" id="decending" name="filterField" value="cust">
+              <label for="vehicle2">Customer:</label>
+              <input type="radio" id="ascending" name="filterField" value="type">
+              <label for="vehicle1">Service Type: </label>
+              <input type="radio" id="decending" name="filterField" value="dealer">
+              <label for="vehicle2">Dealer:</label>
+              <label for="filtertxt"><b>Filter Text:</b></label>
+              <input type="text" name="filterValue"><br>
+
+            
+              <br><br>
+     
               <input type="submit" value="Submit">
             </form>
           </div>
     
     <div>
-        <div class="vertical-menu">
-            <ol>
-            {{range .}}
-                <li>{{.MenuLine}}</li>
-                {{end}}
-            </ol>
-          </div>
+        <table>
+          <tr class="bold"><td>T. Date</td><td>Customer</td><td>Car</td><td>Service Type</td><td>Technician</td><td>Price</td></b></tr>
+          {{range .}}
+          <tr><td>{{.ServiceDate}}</td><td>{{.CustomerName}}</td><td>{{.Car}}</td><td>{{.ServiceType}}</td><td>{{.TechName}}</td><td>{{.Price}}</td></tr>
+{{end}}
+        </table>
     </div>
     

@@ -39,8 +39,6 @@ func (c Customer) ToSlice() []string {
 		c.LastCWPromo.PromoDate,
 	}
 
-	fmt.Println(len(rec))
-
 	return rec
 
 }
@@ -155,10 +153,9 @@ func UpdateRecords(customersList map[string]Customer) error {
 	fmt.Println("Update Customer File")
 
 	var newRecs [][]string
-	fmt.Println("CL len ", len(customersList))
+
 	for _, cust := range customersList {
 		rec := cust.ToSlice()
-		fmt.Println("REclen ", len(rec))
 		newRecs = append(newRecs, rec)
 	}
 

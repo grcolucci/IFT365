@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
-	"sort"
 	"strconv"
 )
 
@@ -12,6 +11,7 @@ type Transaction struct {
 	Date        string
 	CustomerID  string
 	ServiceType string
+	CarNum      string
 	Technician  string
 	Price       float64
 	MenuLine    string
@@ -27,7 +27,7 @@ type FilterList struct {
 	FilterValue string
 }
 
-func LoadTransactions(fName string, sortBy SortList, filterBy FilterList) ([]Transaction, error) {
+func LoadTransactions(fName string) ([]Transaction, error) {
 
 	csvFile, err := os.Open(fName)
 	if err != nil {
@@ -36,10 +36,6 @@ func LoadTransactions(fName string, sortBy SortList, filterBy FilterList) ([]Tra
 	fmt.Println("Successfully Opened CSV file: ", fName)
 	defer csvFile.Close()
 
-	fmt.Println(sortBy)
-	fmt.Println(filterBy)
-
-	//	transactionList := make(map[string]Transaction)
 	transactionsList := make([]Transaction, 0)
 
 	csvLines, err := csv.NewReader(csvFile).ReadAll()
@@ -51,66 +47,40 @@ func LoadTransactions(fName string, sortBy SortList, filterBy FilterList) ([]Tra
 			Date:        line[0],
 			CustomerID:  line[1],
 			ServiceType: line[2],
-			Technician:  line[3],
+			CarNum:      line[3],
+			Technician:  line[4],
 		}
 
-		stat.Price, err = strconv.ParseFloat(line[4], 64)
+		stat.Price, err = strconv.ParseFloat(line[5], 64)
 		if err != nil {
 			fmt.Println(err)
 		}
 
-		if filterBy.FilterBy == "custID" {
-			if filterBy.FilterValue == stat.CustomerID {
-				transactionsList = append(transactionsList, stat)
-			}
-		} else if filterBy.FilterBy == "custID" {
-			if filterBy.FilterValue == stat.CustomerID {
-				transactionsList = append(transactionsList, stat)
-			}
-		} else {
-			transactionsList = append(transactionsList, stat)
-		}
-
-	}
-
-	if sortBy.SortField == "date" {
-		// Sort by last name
-		sort.Slice(transactionsList, func(i, j int) bool {
-			if sortBy.Ascending {
-				return transactionsList[i].Date < transactionsList[j].Date
-			} else {
-				return transactionsList[i].Date > transactionsList[j].Date
-			}
-		})
-	} else if sortBy.SortField == "type" {
-		// Sort by last name
-		sort.Slice(transactionsList, func(i, j int) bool {
-			if sortBy.Ascending {
-				return transactionsList[i].ServiceType < transactionsList[j].ServiceType
-			} else {
-				return transactionsList[i].ServiceType > transactionsList[j].ServiceType
-			}
-		})
-	} else if sortBy.SortField == "tech" {
-		// Sort by last name
-		sort.Slice(transactionsList, func(i, j int) bool {
-			if sortBy.Ascending {
-				return transactionsList[i].Technician < transactionsList[j].Technician
-			} else {
-				return transactionsList[i].Technician > transactionsList[j].Technician
-			}
-		})
-	} else if sortBy.SortField == "price" {
-		// Sort by last name
-		sort.Slice(transactionsList, func(i, j int) bool {
-			if sortBy.Ascending {
-				return transactionsList[i].Price < transactionsList[j].Price
-			} else {
-				return transactionsList[i].Price > transactionsList[j].Price
-			}
-		})
+		transactionsList = append(transactionsList, stat)
 	}
 
 	return transactionsList, nil
 
+}
+
+func WriteTransactions(rows [][]string) error {
+
+	options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
+	file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
+
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	w := csv.NewWriter(file)
+	defer w.Flush()
+
+	err = w.WriteAll(rows)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

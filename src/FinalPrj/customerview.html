@@ -79,6 +79,17 @@ input[type="submit"] {
 table {
 
   font-size: 20;
+  text-align: center;
+  align-content: center;
+}
+
+td tr {
+  padding: 12px;
+
+}
+
+.bold {
+  font-weight: bold;
 }
 </style>
 	<h1>Customers</h1>
@@ -113,28 +124,34 @@ table {
               </form>
             </div>
 <div class="item3">
-  <center><h3>Last Oil Change</h3></center> <br>
-  
+  <center><h3>Last Oil Change</h3></center>
   <table>
-<tr><td></td><td>Car 1</td><td>Car 2</td></tr>
-<tr><td></td><td>{{.Customer.Car1.LastOilChange.ServiceDate}}</td><td>{{.Customer.Car2.LastOilChange.ServiceDate}}</td></tr>
-<tr><td></td><td>{{.Customer.Car1.LastOilChange.Dealer}}</td><td>{{.Customer.Car2.LastOilChange.Dealer}}</td></tr>
-<tr><td></td><td>{{.Customer.Car1.LastOilChange.Technician}}</td><td>{{.Customer.Car2.LastOilChange.Technician}}</td></tr>
+<tr><td></td><td class="bold">Car 1</td><td class="bold">Car 2</td></tr>
+<tr><td class="bold">Date</td><td>{{.Customer.Car1.LastOilChange.ServiceDate}}</td><td>{{.Customer.Car2.LastOilChange.ServiceDate}}</td></tr>
+<tr><td class="bold">Dealer</td><td>{{.Customer.Car1.LastOilChange.Dealer}}</td><td>{{.Customer.Car2.LastOilChange.Dealer}}</td></tr>
+<tr><td class="bold">Technician</td><td>{{.Customer.Car1.LastOilChange.Technician}}</td><td>{{.Customer.Car2.LastOilChange.Technician}}</td></tr>
   </table>
   
   
   <center><h3>Last Car Wash</h3></center> <br>
   <table>
-    <tr><td></td><td>Car 1</td><td>Car 2</td></tr>
-    <tr><td></td><td>{{.Customer.Car1.LastCarWash.ServiceDate}}</td><td>{{.Customer.Car2.LastCarWash.ServiceDate}}</td></tr>
-    <tr><td></td><td>{{.Customer.Car1.LastCarWash.Dealer}}</td><td>{{.Customer.Car2.LastCarWash.Dealer}}</td></tr>
-    <tr><td></td><td>{{.Customer.Car1.LastCarWash.Technician}}</td><td>{{.Customer.Car2.LastCarWash.Technician}}</td></tr>
+    <tr><td></td><td class="bold">Car 1</td><td class="bold">Car 2</td></tr>
+    <tr><td class="bold">Date</td><td>{{.Customer.Car1.LastCarWash.ServiceDate}}</td><td>{{.Customer.Car2.LastCarWash.ServiceDate}}</td></tr>
+    <tr><td class="bold">Dealer</td><td>{{.Customer.Car1.LastCarWash.Dealer}}</td><td>{{.Customer.Car2.LastCarWash.Dealer}}</td></tr>
+    <tr><td class="bold">Technician</td><td>{{.Customer.Car1.LastCarWash.Technician}}</td><td>{{.Customer.Car2.LastCarWash.Technician}}</td></tr>
       </table>
     </div>
 
 <div class="item4">
     <H3><center>Available Services</center></H3><br>
       <form action="/carservice/serviceaction" method="get">
+        <b>Select the vehicle(s):</b><br>
+        <input type="checkbox" name="servicecar1" value=1>
+        <label for="servicecar1">{{.Customer.Car1.Year}} {{.Customer.Car1.Brand}} {{.Customer.Car1.Model}}</label><br>
+          <input type="checkbox" name="servicecar2" value=2>
+          <label for="servicecar2"> {{.Customer.Car2.Year}} {{.Customer.Car2.Brand}} {{.Customer.Car2.Model}}</label><br>
+  
+        <br><b>Then select the service(s).</b><br>
         {{range .Services}}
         <input type="checkbox" name=service{{.ID}} value={{.ID}}>
         <label for=service{{.ID}}> {{.Name}} ${{.Price}}</label><br>
