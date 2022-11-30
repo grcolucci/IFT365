@@ -1,13 +1,12 @@
 package main
 
 import (
-	"encoding/csv"
 	"fmt"
 	"html/template"
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
+	"sort"
 	"strconv"
 	"time"
 
@@ -39,10 +38,13 @@ type CustViewData struct {
 }
 
 type TransactionsDisplayList struct {
-	serviceDate string
-	DealerName  string
-	ServiceType string
-	TechName    string
+	ServiceDate  string
+	CustomerName string
+	DealerName   string
+	ServiceType  string
+	Car          string
+	TechName     string
+	Price        string
 }
 
 type PromoMgmt struct {
@@ -84,30 +86,103 @@ func transactionListHandler(writer http.ResponseWriter, request *http.Request) {
 	var filterBy transactions.FilterList
 
 	sortBy.SortField = request.FormValue("sortby")
-	sortBy.Ascending, _ = strconv.ParseBool(request.URL.Query().Get("order"))
+	sortBy.Ascending, _ = strconv.ParseBool(request.FormValue("order"))
 
-	filterBy.FilterBy = request.URL.Query().Get("filterField")
-	filterBy.FilterValue = request.URL.Query().Get("filterValue")
+	filterBy.FilterBy = request.FormValue("filterField")
+	filterBy.FilterValue = request.FormValue("filterValue")
 
-	TransactionsList, err := transactions.LoadTransactions("transactions.csv", sortBy, filterBy)
+	TransactionsList, err := transactions.LoadTransactions("transactions.csv")
 	check(err)
-	var tm string
-	for i, tran := range TransactionsList {
-		tm = fmt.Sprintf("%15s\t%10s\t%10s\t\t\t%10s\t%0.2f",
-			tran.Date,
-			tran.CustomerID,
-			ServicesList[tran.ServiceType].Name,
-			TechniciansList[tran.Technician].Name,
-			tran.Price)
-		nl := &TransactionsList[i]
-		(*nl).MenuLine = tm
 
+	var tdList []TransactionsDisplayList
+	for _, tran := range TransactionsList {
+
+		dLine := TransactionsDisplayList{
+			ServiceDate:  tran.Date,
+			CustomerName: CustomersList[tran.CustomerID].Name,
+			ServiceType:  ServicesList[tran.ServiceType].Name,
+			TechName:     TechniciansList[tran.Technician].Name,
+		}
+
+		if tran.CarNum == "1" {
+			dLine.Car = fmt.Sprintf("%s %s %s",
+				CustomersList[tran.CustomerID].Car1.Year,
+				CustomersList[tran.CustomerID].Car1.Brand,
+				CustomersList[tran.CustomerID].Car1.Model,
+			)
+		} else {
+			dLine.Car = fmt.Sprintf("%s %s %s",
+				CustomersList[tran.CustomerID].Car2.Year,
+				CustomersList[tran.CustomerID].Car2.Brand,
+				CustomersList[tran.CustomerID].Car2.Model,
+			)
+		}
+		dLine.Price = fmt.Sprintf("%0.2f", tran.Price)
+
+		if filterBy.FilterBy == "cust" {
+			if filterBy.FilterValue == dLine.CustomerName {
+				tdList = append(tdList, dLine)
+			}
+		} else if filterBy.FilterBy == "date" {
+			if filterBy.FilterValue == dLine.ServiceDate {
+				tdList = append(tdList, dLine)
+			}
+		} else if filterBy.FilterBy == "type" {
+			if filterBy.FilterValue == dLine.ServiceType {
+				tdList = append(tdList, dLine)
+			}
+		} else if filterBy.FilterBy == "dealer" {
+			if filterBy.FilterValue == dLine.DealerName {
+				tdList = append(tdList, dLine)
+			}
+		} else {
+			fmt.Println("Adding Rec")
+			tdList = append(tdList, dLine)
+		}
+	}
+
+	if sortBy.SortField == "date" {
+		// Sort by last name
+		sort.Slice(tdList, func(i, j int) bool {
+			if sortBy.Ascending {
+				return tdList[i].ServiceDate < tdList[j].ServiceDate
+			} else {
+				return tdList[i].ServiceDate > tdList[j].ServiceDate
+			}
+		})
+	} else if sortBy.SortField == "type" {
+		// Sort by last name
+		sort.Slice(tdList, func(i, j int) bool {
+			if sortBy.Ascending {
+				return tdList[i].ServiceType < tdList[j].ServiceType
+			} else {
+				return tdList[i].ServiceType > tdList[j].ServiceType
+			}
+		})
+	} else if sortBy.SortField == "tech" {
+		// Sort by last name
+		sort.Slice(tdList, func(i, j int) bool {
+			if sortBy.Ascending {
+				return tdList[i].TechName < tdList[j].TechName
+			} else {
+				return tdList[i].TechName > tdList[j].TechName
+			}
+		})
+	} else if sortBy.SortField == "price" {
+		// Sort by last name
+		sort.Slice(tdList, func(i, j int) bool {
+			if sortBy.Ascending {
+				return tdList[i].Price < tdList[j].Price
+			} else {
+				return tdList[i].Price > tdList[j].Price
+			}
+		})
 	}
 
 	html, err := template.ParseFiles("transactions.html")
 	check(err)
 
-	err = html.Execute(writer, TransactionsList)
+	err = html.Execute(writer, tdList)
 	check(err)
 }
 
@@ -159,89 +234,107 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	cust := customers.Customer{
-		CustomerId: custID,
-		Name:       CustomersList[custID].Name,
-		Address:    CustomersList[custID].Address,
-		City:       CustomersList[custID].City,
-		State:      CustomersList[custID].State,
-		Zip:        CustomersList[custID].Zip,
-		Phone:      CustomersList[custID].Phone,
-		DealerID:   CustomersList[custID].DealerID,
-		Car1:       CustomersList[custID].Car1,
-		Car2:       CustomersList[custID].Car2,
-		//LastOilChange: CustomersList[custID].LastOilChange,
-		//LastCarWash:   CustomersList[custID].LastCarWash,
+		CustomerId:  custID,
+		Name:        CustomersList[custID].Name,
+		Address:     CustomersList[custID].Address,
+		City:        CustomersList[custID].City,
+		State:       CustomersList[custID].State,
+		Zip:         CustomersList[custID].Zip,
+		Phone:       CustomersList[custID].Phone,
+		DealerID:    CustomersList[custID].DealerID,
+		Car1:        CustomersList[custID].Car1,
+		Car2:        CustomersList[custID].Car2,
+		LastOCPromo: CustomersList[custID].LastOCPromo,
+		LastCWPromo: CustomersList[custID].LastCWPromo,
 	}
+
+	var rows [][]string
 
 	if request.FormValue("service001") == "001" {
 
 		updateCustRec = true
+		if request.FormValue("servicecar1") == "1" {
+			fmt.Println("Car1 Oil")
+			row := []string{time.Now().Format("01-02-2006"),
+				custID,
+				"001",
+				"1",
+				TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
+				fmt.Sprintf("%f", ServicesList["001"].Price),
+			}
 
-		row := []string{time.Now().Format("01-02-2006"),
-			custID,
-			"001",
-			TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
-			fmt.Sprintf("%f", ServicesList["001"].Price),
+			rows = append(rows, row)
+
+			cust.Car1.LastOilChange.Dealer = CustomersList[custID].DealerID
+			cust.Car1.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
+			cust.Car1.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
+
 		}
 
-		// cust.LastOilChange.Dealer = CustomersList[custID].LastOilChange.Dealer
-		// cust.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
-		// cust.LastOilChange.ServiceType = "001"
-		// fmt.Printf("Rand %03d\n", randIndex)
-		// cust.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
+		if request.FormValue("servicecar2") == "2" {
+			fmt.Println("Car2 Oil")
+			row := []string{time.Now().Format("01-02-2006"),
+				custID,
+				"001",
+				"2",
+				TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
+				fmt.Sprintf("%f", ServicesList["001"].Price),
+			}
 
-		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
-		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
+			rows = append(rows, row)
 
-		if err != nil {
-			log.Fatalln("failed to open file", err)
+			cust.Car2.LastOilChange.Dealer = CustomersList[custID].DealerID
+			cust.Car2.LastOilChange.ServiceDate = time.Now().Format("01-02-2006")
+			cust.Car2.LastOilChange.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
+
 		}
-
-		defer file.Close()
-
-		w := csv.NewWriter(file)
-		defer w.Flush()
-
-		err = w.Write(row)
-		check(err)
 	}
 
 	if request.FormValue("service101") == "101" {
-
 		updateCustRec = true
+		if request.FormValue("servicecar1") == "1" {
+			fmt.Println("Car1 Wash")
+			row := []string{time.Now().Format("01-02-2006"),
+				custID,
+				"101",
+				"1",
+				TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
+				fmt.Sprintf("%f", ServicesList["101"].Price),
+			}
 
-		fmt.Println("CW")
+			rows = append(rows, row)
 
-		row := []string{time.Now().Format("01-02-2006"),
-			custID,
-			"101",
-			TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
-			fmt.Sprintf("%f", ServicesList["101"].Price),
+			cust.Car1.LastCarWash.Dealer = CustomersList[custID].DealerID
+			cust.Car1.LastCarWash.ServiceDate = time.Now().Format("01-02-2006")
+			cust.Car1.LastCarWash.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
+
 		}
 
-		options := os.O_WRONLY | os.O_APPEND | os.O_CREATE
-		file, err := os.OpenFile("transactions.csv", options, os.FileMode(0600))
+		if request.FormValue("servicecar2") == "2" {
+			fmt.Println("Car2 Wash")
+			row := []string{time.Now().Format("01-02-2006"),
+				custID,
+				"101",
+				"2",
+				TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
+				fmt.Sprintf("%f", ServicesList["101"].Price),
+			}
 
-		if err != nil {
+			rows = append(rows, row)
 
-			log.Fatalln("failed to open file", err)
+			cust.Car2.LastCarWash.Dealer = CustomersList[custID].DealerID
+			cust.Car2.LastCarWash.ServiceDate = time.Now().Format("01-02-2006")
+			cust.Car2.LastCarWash.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
+
 		}
 
-		defer file.Close()
-
-		w := csv.NewWriter(file)
-		defer w.Flush()
-
-		err = w.Write(row)
-		check(err)
-
-		// cust.LastCarWash.Dealer = CustomersList[custID].LastCarWash.Dealer
-		// cust.LastCarWash.ServiceDate = time.Now().Format("01-02-2006")
-		// cust.LastCarWash.ServiceType = request.FormValue("101")
-		// cust.LastCarWash.Technician = TechniciansList[fmt.Sprintf("%03d", randIndex)].ID
 	}
 
 	if updateCustRec {
+
+		err := transactions.WriteTransactions(rows)
+		check(err)
+
 		// Delete customer recod from list, then re-add updated record
 
 		delete(CustomersList, custID)
@@ -249,7 +342,7 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		CustomersList[cust.CustomerId] = cust
 
 		// Write out the updated list to the file
-		err := customers.UpdateRecords(CustomersList)
+		err = customers.UpdateRecords(CustomersList)
 		check(err)
 	}
 
@@ -367,7 +460,7 @@ func updatecustHandler(writer http.ResponseWriter, request *http.Request) {
 		State:      request.FormValue("State"),
 		Zip:        request.FormValue("Zip"),
 		Phone:      request.FormValue("Phone"),
-		DealerID:   request.FormValue("dealer"),
+		DealerID:   request.FormValue("Dealer"),
 	}
 
 	newCust.Car1.Year = request.FormValue("car1year")
