@@ -276,7 +276,7 @@ func promomgmtHandler(writer http.ResponseWriter, request *http.Request) {
 	promomgmt.CustomerCnt = len(CustomersList)
 	promomgmt.Customers = CustomersList
 	if promomgmt.CustomerCnt > 1 {
-		promomgmt.DisableButton = true
+		promomgmt.DisableButton = false
 	}
 
 	err = html.Execute(writer, promomgmt)
@@ -366,6 +366,7 @@ func updatecustHandler(writer http.ResponseWriter, request *http.Request) {
 		City:       request.FormValue("City"),
 		State:      request.FormValue("State"),
 		Zip:        request.FormValue("Zip"),
+		Phone:      request.FormValue("Phone"),
 		DealerID:   request.FormValue("dealer"),
 	}
 	newCust.LastOilChange.ServiceDate = CustomersList[custID].LastOilChange.ServiceDate
