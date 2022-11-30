@@ -50,7 +50,7 @@ type TransactionsDisplayList struct {
 type PromoMgmt struct {
 	DaysPrior     string
 	CustomerCnt   int
-	Customers     map[string]customers.Customer
+	Customers     []customers.Customer
 	DisableButton bool
 }
 
@@ -366,9 +366,32 @@ func promomgmtHandler(writer http.ResponseWriter, request *http.Request) {
 	check(err)
 
 	var promomgmt PromoMgmt
+	now := time.Now()
 
-	promomgmt.CustomerCnt = len(CustomersList)
-	promomgmt.Customers = CustomersList
+	daysPasttxt := request.FormValue("lastpromodays")
+	fmt.Println(len(daysPasttxt))
+	if len(daysPasttxt) > 0 {
+		DaysPast, err := strconv.Atoi(daysPasttxt)
+		check(err)
+		DaysPast = DaysPast * -1
+		now = time.Now().AddDate(0, 0, DaysPast) //
+	}
+	var promoList []customers.Customer
+
+	for _, cust := range CustomersList {
+
+		if cust.LastCWPromo.PromoDate == "" {
+			cust.LastCWPromo.PromoDate = time.Now().AddDate(0, 0, -300).Format("2006-01-02")
+		}
+
+		cDate, _ := time.Parse("2006-01-02", cust.LastCWPromo.PromoDate)
+		fmt.Println("Cdate ", cDate.Unix(), " now ", now.Unix())
+		if cDate.Unix() < now.Unix() {
+			promoList = append(promoList, cust)
+		}
+	}
+	promomgmt.CustomerCnt = len(promoList)
+	promomgmt.Customers = promoList
 	if promomgmt.CustomerCnt > 1 {
 		promomgmt.DisableButton = false
 	}
