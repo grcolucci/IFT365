@@ -33,9 +33,6 @@
 }
 /*background-color: rgba(255, 255, 255, 0.8);*/
 .grid-container > div {
-
-  text-align: center;
-  align-items: center;
   padding: 20px 0;
  
 }
@@ -44,31 +41,35 @@
   grid-row-start: 1;
   grid-row-end: 3;
   font-size: 18px;
-  align-content: center;
 }
 
 .item2 {
   background-color: aquamarine;
   font-size: 30px;
+  text-align: center;
 }
 
 .item3 {
   background-color: yellow;
   font-size: 30px;
 }
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
 </style>
 <h1>Car Service Manager</h1>
 
 <div class="grid-container">
-  <div class="item1">
-  
-
+  <div class="item1" >
     <div class="vertical-menu">
       <a href="http://localhost:8080/carservice" class="active">All Dealers</a>
       {{range .Dealers}}
         <a name="dealers" href={{.URLLine}}>{{.MenuLine}}</a>
         {{end}}
       </div>
+      Select a dealer to filter customers.
 	  <div class="vertical-menu">
 		  <a href="#" class="active">Number of customers: {{.CustomerCount}}</a>
 		  {{range .Customers}}
