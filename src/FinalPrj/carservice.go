@@ -86,8 +86,6 @@ func loadfiles() error {
 
 	ServicesList, err = services.LoadServices("services.csv")
 	check(err)
-	//TransactionsList, err = transactions.LoadTransactions("transactions.csv")
-	//check(err)
 
 	return err
 
