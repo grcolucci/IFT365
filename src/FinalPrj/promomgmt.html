@@ -97,10 +97,14 @@ font-size: 20;
 <div class="grid-container">
 <div class="item1" >
   <p>Create a program that will send a promotion (or reminder) to the vehicle owner for oil change 
-    6 months (defaults to 180 days) since the last oil change.</p>
+    6 months since the last oil change.</p>
         <form action="/carservice/promomgmt" method="POST">
                 <label for="lastpromodays">Days Since Last Promo:</label>
-                  <input type="text" name="lastpromodays" value=180><br>
+                  <input type="text" name="lastpromodays" value={{.DaysPrior}}><br>
+                  <input type="radio" name="promotype" value=001 required>
+                  <label for="oilchange"> Oil Change</label><br>
+                  <input type="radio" name="promotype" value=101 required>
+                  <label for="carwash"> Car Wash</label><br>
                    <input type="Submit" value="Select Customer Records">
               </form>
             </div>
@@ -108,20 +112,20 @@ font-size: 20;
 
 <div class="item3">
     <H3><center>Select Promotion type to send</center></H3><br>
-      <form action="/serviceaction" method="get"> 
-        <input type="radio" name="promotype" value=1>
+      <form action="/carservice/promosend" method="get"> 
+        <input type="radio" name="promotype" value=001 required>
         <label for="oilchange"> Oil Change</label><br>
-        <input type="radio" name="promotype" value=2>
+        <input type="radio" name="promotype" value=101 required>
         <label for="carwash"> Car Wash</label><br>
 	
-        <input type="hidden" value="1" name="custID">
+        <input type="hidden" value={{.DaysPrior}} name="promoDays">
 
         <input type="submit" value="Process Promotion" {{if .DisableButton}}disabled{{end}}>
       </form>
 </div>
 <div class="item4">
-    Customer Cnt is {{if .CustomerCnt}} {{.CustomerCnt}} {{end}}
-     Button is {{.DisableButton}} {{if .DisableButton}}off{{end}}
+    Customer Cnt is {{.CustomerCnt}} {{.ListStatus}}
+     
 
      <table>
 		  {{range .Customers}}

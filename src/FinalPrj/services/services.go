@@ -7,6 +7,12 @@ import (
 	"strconv"
 )
 
+// Settings that can be easily changed if needed.
+const (
+	OILCHANGE string = "001"
+	CARWASH   string = "101"
+)
+
 type Service struct {
 	ID    string
 	Type  int
