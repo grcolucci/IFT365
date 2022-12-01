@@ -1,7 +1,6 @@
 package promotions
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -22,9 +21,6 @@ func PromoSelections(daysPrior string, pType string, CustomersList map[string]cu
 	var promoList []customers.Customer
 
 	var cDate time.Time
-
-	fmt.Println("Days", daysPrior)
-	fmt.Println("type", pType)
 
 	for _, cust := range CustomersList {
 		if pType == services.OILCHANGE {

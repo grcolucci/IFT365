@@ -351,7 +351,7 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 
 }
 
-func viewHandler(writer http.ResponseWriter, request *http.Request) {
+/* func viewHandler(writer http.ResponseWriter, request *http.Request) {
 
 	html, err := template.ParseFiles("carservice.html")
 	check(err)
@@ -359,7 +359,7 @@ func viewHandler(writer http.ResponseWriter, request *http.Request) {
 	err = html.Execute(writer, nil)
 	check(err)
 
-}
+} */
 
 func promomgmtHandler(writer http.ResponseWriter, request *http.Request) {
 
@@ -373,8 +373,6 @@ func promomgmtHandler(writer http.ResponseWriter, request *http.Request) {
 
 	promomgmt.DaysPrior = request.FormValue("lastpromodays")
 	promoType := request.FormValue("promotype")
-
-	fmt.Println(len(promomgmt.DaysPrior))
 
 	if len(promomgmt.DaysPrior) > 0 {
 		promoList, err = promotions.PromoSelections(
