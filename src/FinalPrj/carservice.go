@@ -138,7 +138,6 @@ func transactionListHandler(writer http.ResponseWriter, request *http.Request) {
 				tdList = append(tdList, dLine)
 			}
 		} else {
-			fmt.Println("Adding Rec")
 			tdList = append(tdList, dLine)
 		}
 	}
@@ -383,8 +382,8 @@ func promomgmtHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 	promomgmt.CustomerCnt = len(promoList)
 	promomgmt.Customers = promoList
-	promomgmt.ListStatus = fmt.Sprintf("Seletect Records for over %s days past and for %s type.", promomgmt.DaysPrior, promoType)
-	if promomgmt.CustomerCnt > 1 {
+	promomgmt.ListStatus = fmt.Sprintf("Seletect Records for over %s days past and for %s type.", promomgmt.DaysPrior, ServicesList[promoType].Name)
+	if promomgmt.CustomerCnt > 0 {
 		promomgmt.DisableButton = false
 	}
 
