@@ -1,3 +1,15 @@
+// ////////////////////////////////////////////////////////////////////////////////////////
+//
+// Filename: dealers.go
+// File type: Go
+// Author: Glenn Colucci
+// Class: IFT 365
+//
+// Date: December 2, 2022
+//
+// Description: This file deals with the dealer records and csv file.
+// All structures and operation pertaining to Dealer records should be
+// handled by this package.
 package dealers
 
 import (

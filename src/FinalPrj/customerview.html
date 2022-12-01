@@ -117,7 +117,10 @@ td tr {
                   <label for="car2year">Car2 Year:</label><input type="text" name="car2year" value={{.Customer.Car2.Year}} >
                   <label for="car2brand">Car2 Make:</label><input type="text" name="car2brand" value={{.Customer.Car2.Brand}} >
                   <label for="car2model">Car2 Model:</label><input type="text" name="car2model" value={{.Customer.Car2.Model}} ><br><br>
-                   <br>
+                   
+                <br>
+                <label for="lastpromooc">Last Promo for Oil Change:</label><input type="text" name="lastpromooc" readonly value={{.Customer.LastOCPromo.PromoDate}} >
+                <label for="lastpromocw">Last Promo for Car Wash:</label><input type="text" name="lastpromocw" readonly value={{.Customer.LastCWPromo.PromoDate}} ><br><br>
        
                   <input type="hidden" name="Dealer" value={{.Customer.DealerID}}>
                 <center><input type="Submit" value="Update Customer Record"></center>

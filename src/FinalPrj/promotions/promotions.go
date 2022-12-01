@@ -1,3 +1,14 @@
+// ////////////////////////////////////////////////////////////////////////////////////////
+//
+// Filename: promotions.go
+// File type: Go
+// Author: Glenn Colucci
+// Class: IFT 365
+// Date: December 2, 2022
+//
+// Description: This file deals with the promotion records and csv file
+// All structures and operations pertaining to Promotional records should be
+// handled by this package.
 package promotions
 
 import (
