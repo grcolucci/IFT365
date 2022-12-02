@@ -1,3 +1,14 @@
+// ////////////////////////////////////////////////////////////////////////////////////////
+//
+// Filename: customers.go
+// File type: Go
+// Author: Glenn Colucci
+// Class: IFT 365
+// Date: December 2, 2022
+//
+// Description: This file deals with the customer records and csv file
+// All structures and operation pertaining to Customer records should be
+// handled by this package.
 package customers
 
 import (

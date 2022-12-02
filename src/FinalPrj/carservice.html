@@ -51,7 +51,7 @@
 
 .item3 {
   background-color: yellow;
-  font-size: 30px;
+  font-size: 20px;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
@@ -69,7 +69,7 @@
         <a name="dealers" href={{.URLLine}}>{{.MenuLine}}</a>
         {{end}}
       </div>
-      Select a dealer to filter customers.
+      <center><b>Select a dealer to filter customers.</b></center>
 	  <div class="vertical-menu">
 		  <a href="#" class="active">Number of customers: {{.CustomerCount}}</a>
 		  {{range .Customers}}
@@ -83,10 +83,19 @@
       <a href="http://localhost:8080/carservice/promomgmt" class="active">Promotions Managment</a>
       </p>
     </div>
-    <div class="item3">glenn3</div>
-    <div class="item4">glenn4</div>
+    <div class="item3">
+      <b>On this screen you can:</b>
+      <ol>
+        <li>filter the customer list by dealer (or select "All Dealers").</li>
+        <li>Select a customer to view their history and/or request a service.</li>
+      </ol>
+      <b>The above links allow you to:</b>
+      <ol><li>Add New Customer - Add customer to db.</li>
+      <li>View Transactions - View, Sort and Filter Oil Change and Car Washer transactions.</li>
+    <li>Promotions - Select customer records and send out promotions.</li> </ol></div> 
+    <!-- <div class="item4">glenn4</div>
     <div class="item5">glenn5</div>
     <div class="item6">glenn6</div>
     <div class="item7">glenn7</div>
-    <div class="item8">glenn8</div>
+    <div class="item8">glenn8</div> -->
 </div>

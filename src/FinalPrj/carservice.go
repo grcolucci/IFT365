@@ -1,3 +1,14 @@
+// ////////////////////////////////////////////////////////////////////////////////////////
+//
+// Filename: carservice.go
+// File type: Go
+// Author: Glenn Colucci
+// Class: IFT 365
+// Date: December 2, 2022
+//
+// Description: This file is the main driver for the application.  All URL access
+// for the app is handled via this file.  General processing is done here but
+// must of the work is done by the project packages that are imported.
 package main
 
 import (
@@ -12,6 +23,7 @@ import (
 
 	"github.com/IFT365/src/FinalPrj/customers"
 	"github.com/IFT365/src/FinalPrj/dealers"
+	"github.com/IFT365/src/FinalPrj/promotions"
 	"github.com/IFT365/src/FinalPrj/services"
 	"github.com/IFT365/src/FinalPrj/technicians"
 	"github.com/IFT365/src/FinalPrj/transactions"
@@ -50,6 +62,7 @@ type TransactionsDisplayList struct {
 type PromoMgmt struct {
 	DaysPrior     string
 	CustomerCnt   int
+	ListStatus    string
 	Customers     []customers.Customer
 	DisableButton bool
 }
@@ -73,8 +86,6 @@ func loadfiles() error {
 
 	ServicesList, err = services.LoadServices("services.csv")
 	check(err)
-	//TransactionsList, err = transactions.LoadTransactions("transactions.csv")
-	//check(err)
 
 	return err
 
@@ -136,7 +147,6 @@ func transactionListHandler(writer http.ResponseWriter, request *http.Request) {
 				tdList = append(tdList, dLine)
 			}
 		} else {
-			fmt.Println("Adding Rec")
 			tdList = append(tdList, dLine)
 		}
 	}
@@ -257,10 +267,10 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 			fmt.Println("Car1 Oil")
 			row := []string{time.Now().Format("01-02-2006"),
 				custID,
-				"001",
+				services.OILCHANGE,
 				"1",
 				TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
-				fmt.Sprintf("%f", ServicesList["001"].Price),
+				fmt.Sprintf("%f", ServicesList[services.OILCHANGE].Price),
 			}
 
 			rows = append(rows, row)
@@ -275,10 +285,10 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 			fmt.Println("Car2 Oil")
 			row := []string{time.Now().Format("01-02-2006"),
 				custID,
-				"001",
+				services.OILCHANGE,
 				"2",
 				TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
-				fmt.Sprintf("%f", ServicesList["001"].Price),
+				fmt.Sprintf("%f", ServicesList[services.OILCHANGE].Price),
 			}
 
 			rows = append(rows, row)
@@ -290,7 +300,7 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 		}
 	}
 
-	if request.FormValue("service101") == "101" {
+	if request.FormValue("service101") == services.CARWASH {
 		updateCustRec = true
 		if request.FormValue("servicecar1") == "1" {
 			fmt.Println("Car1 Wash")
@@ -299,7 +309,7 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 				"101",
 				"1",
 				TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
-				fmt.Sprintf("%f", ServicesList["101"].Price),
+				fmt.Sprintf("%f", ServicesList[services.CARWASH].Price),
 			}
 
 			rows = append(rows, row)
@@ -314,10 +324,10 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 			fmt.Println("Car2 Wash")
 			row := []string{time.Now().Format("01-02-2006"),
 				custID,
-				"101",
+				services.CARWASH,
 				"2",
 				TechniciansList[fmt.Sprintf("%03d", randIndex)].ID,
-				fmt.Sprintf("%f", ServicesList["101"].Price),
+				fmt.Sprintf("%f", ServicesList[services.CARWASH].Price),
 			}
 
 			rows = append(rows, row)
@@ -350,7 +360,7 @@ func serviceactionHandler(writer http.ResponseWriter, request *http.Request) {
 
 }
 
-func viewHandler(writer http.ResponseWriter, request *http.Request) {
+/* func viewHandler(writer http.ResponseWriter, request *http.Request) {
 
 	html, err := template.ParseFiles("carservice.html")
 	check(err)
@@ -358,41 +368,29 @@ func viewHandler(writer http.ResponseWriter, request *http.Request) {
 	err = html.Execute(writer, nil)
 	check(err)
 
-}
+} */
 
 func promomgmtHandler(writer http.ResponseWriter, request *http.Request) {
 
 	html, err := template.ParseFiles("promomgmt.html")
 	check(err)
 
-	var promomgmt PromoMgmt
-	now := time.Now()
-
-	daysPasttxt := request.FormValue("lastpromodays")
-	fmt.Println(len(daysPasttxt))
-	if len(daysPasttxt) > 0 {
-		DaysPast, err := strconv.Atoi(daysPasttxt)
-		check(err)
-		DaysPast = DaysPast * -1
-		now = time.Now().AddDate(0, 0, DaysPast) //
+	promomgmt := PromoMgmt{
+		DisableButton: true,
 	}
 	var promoList []customers.Customer
 
-	for _, cust := range CustomersList {
+	promomgmt.DaysPrior = request.FormValue("lastpromodays")
+	promoType := request.FormValue("promotype")
 
-		if cust.LastCWPromo.PromoDate == "" {
-			cust.LastCWPromo.PromoDate = time.Now().AddDate(0, 0, -300).Format("2006-01-02")
-		}
-
-		cDate, _ := time.Parse("2006-01-02", cust.LastCWPromo.PromoDate)
-		fmt.Println("Cdate ", cDate.Unix(), " now ", now.Unix())
-		if cDate.Unix() < now.Unix() {
-			promoList = append(promoList, cust)
-		}
+	if len(promomgmt.DaysPrior) > 0 {
+		promoList, err = promotions.PromoSelections(
+			promomgmt.DaysPrior, promoType, CustomersList)
 	}
 	promomgmt.CustomerCnt = len(promoList)
 	promomgmt.Customers = promoList
-	if promomgmt.CustomerCnt > 1 {
+	promomgmt.ListStatus = fmt.Sprintf("Seletect Records for over %s days past and for %s type.", promomgmt.DaysPrior, ServicesList[promoType].Name)
+	if promomgmt.CustomerCnt > 0 {
 		promomgmt.DisableButton = false
 	}
 
@@ -403,8 +401,64 @@ func promomgmtHandler(writer http.ResponseWriter, request *http.Request) {
 
 func promosendHandler(writer http.ResponseWriter, request *http.Request) {
 
-	custID := request.URL.Query().Get("custID")
-	http.Redirect(writer, request, fmt.Sprintf("http://localhost:8080/carservice/customerview?custID=%s", custID), http.StatusFound)
+	promoType := request.URL.Query().Get("promotype")
+	promoDays := request.URL.Query().Get("promoDays")
+
+	if len(promoDays) > 0 {
+		promoList, err := promotions.PromoSelections(
+			promoDays, promoType, CustomersList)
+		if err != nil {
+			check(err)
+		}
+
+		for _, pCust := range promoList {
+			custID := pCust.CustomerId
+			newCust := customers.Customer{
+				CustomerId: CustomersList[custID].CustomerId,
+				Name:       CustomersList[custID].Name,
+				Address:    CustomersList[custID].Address,
+				City:       CustomersList[custID].City,
+				State:      CustomersList[custID].State,
+				Zip:        CustomersList[custID].Zip,
+				Phone:      CustomersList[custID].Phone,
+				DealerID:   CustomersList[custID].DealerID,
+			}
+
+			newCust.Car1.Year = CustomersList[custID].Car1.Year
+			newCust.Car1.Brand = CustomersList[custID].Car1.Brand
+			newCust.Car1.Model = CustomersList[custID].Car1.Model
+
+			newCust.Car1.LastCarWash = CustomersList[custID].Car1.LastCarWash
+			newCust.Car1.LastOilChange = CustomersList[custID].Car1.LastOilChange
+
+			newCust.Car2.Year = CustomersList[custID].Car2.Year
+			newCust.Car2.Brand = CustomersList[custID].Car2.Brand
+			newCust.Car2.Model = CustomersList[custID].Car2.Model
+			newCust.Car2.LastCarWash = CustomersList[custID].Car2.LastCarWash
+			newCust.Car2.LastOilChange = CustomersList[custID].Car2.LastOilChange
+			newCust.LastOCPromo = CustomersList[custID].LastOCPromo
+			newCust.LastCWPromo = CustomersList[custID].LastCWPromo
+
+			if promoType == "1" {
+				newCust.LastOCPromo.PromoDate = time.Now().Format("2006-01-02")
+
+			} else {
+				newCust.LastCWPromo.PromoDate = time.Now().Format("2006-01-02")
+			}
+			delete(CustomersList, custID)
+
+			CustomersList[custID] = newCust
+
+		}
+	}
+
+	err := customers.UpdateRecords(CustomersList)
+	check(err)
+
+	err = loadfiles()
+	check(err)
+
+	http.Redirect(writer, request, fmt.Sprintf("http://localhost:8080/carservice"), http.StatusFound)
 
 }
 

@@ -1,3 +1,14 @@
+// ////////////////////////////////////////////////////////////////////////////////////////
+//
+// Filename: services.go
+// File type: Go
+// Author: Glenn Colucci
+// Class: IFT 365
+// Date: December 2, 2022
+//
+// Description: This file deals with the services records and csv file
+// All structures and operation pertaining to Service records should be
+// handled by this package.
 package services
 
 import (
@@ -5,6 +16,12 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+)
+
+// Settings that can be easily changed if needed.
+const (
+	OILCHANGE string = "001"
+	CARWASH   string = "101"
 )
 
 type Service struct {
