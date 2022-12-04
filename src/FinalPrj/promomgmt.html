@@ -100,7 +100,7 @@ font-size: 20;
     6 months since the last oil change.</p>
         <form action="/carservice/promomgmt" method="POST">
                 <label for="lastpromodays">Days Since Last Promo:</label>
-                  <input type="text" name="lastpromodays" value={{.DaysPrior}}><br>
+                  <input type="text" name="lastpromodays" value={{.DaysPrior}}> (or new customers)<br>
                   <input type="radio" name="promotype" value=001 required>
                   <label for="oilchange"> Oil Change</label><br>
                   <input type="radio" name="promotype" value=101 required>
@@ -128,10 +128,10 @@ font-size: 20;
      
 
      <table>
+      <tr><td>Name</td><td>Street</td><td>City</td><td>State</td><td>Zipcode</td></tr>
 		  {{range .Customers}}
-
       <tr>
-        <td>{{.Name}}</td><td>{{.Address}}</td>
+        <td>{{.Name}}</td><td>{{.Address}}</td><td>{{.City}}</td><td>{{.State}}</td><td>{{.Zip}}</td>
       </tr>
       {{end}}
 

@@ -1,0 +1,2 @@
+To run the app: "Go run carservice.go"  
+To access the main/starting page: http://localhost:8080/carservice

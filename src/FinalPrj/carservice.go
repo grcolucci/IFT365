@@ -51,6 +51,7 @@ type CustViewData struct {
 
 type TransactionsDisplayList struct {
 	ServiceDate  string
+	UnixDate     int64
 	CustomerName string
 	DealerName   string
 	ServiceType  string
@@ -115,6 +116,12 @@ func transactionListHandler(writer http.ResponseWriter, request *http.Request) {
 			TechName:     TechniciansList[tran.Technician].Name,
 		}
 
+		uDate, err := time.Parse("01-02-2006", tran.Date)
+		if err != nil {
+			check(err)
+		}
+		dLine.UnixDate = uDate.Unix()
+
 		if tran.CarNum == "1" {
 			dLine.Car = fmt.Sprintf("%s %s %s",
 				CustomersList[tran.CustomerID].Car1.Year,
@@ -152,12 +159,12 @@ func transactionListHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	if sortBy.SortField == "date" {
-		// Sort by last name
+		// Sort by date
 		sort.Slice(tdList, func(i, j int) bool {
 			if sortBy.Ascending {
-				return tdList[i].ServiceDate < tdList[j].ServiceDate
+				return tdList[i].UnixDate < tdList[j].UnixDate
 			} else {
-				return tdList[i].ServiceDate > tdList[j].ServiceDate
+				return tdList[i].UnixDate > tdList[j].UnixDate
 			}
 		})
 	} else if sortBy.SortField == "type" {
